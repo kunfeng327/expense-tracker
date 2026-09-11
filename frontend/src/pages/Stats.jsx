@@ -30,26 +30,26 @@ export default function Stats() {
     pie.setOption({
       color: PALETTE,
       tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-      legend: { bottom: 0, itemWidth: 10, itemHeight: 10, textStyle: { fontSize: 11, color: '#64748b' } },
+      legend: { bottom: 6, itemWidth: 12, itemHeight: 12, itemGap: 14, textStyle: { fontSize: 13, color: '#64748b' } },
       series: [{
         type: 'pie', radius: ['42%', '68%'],
         center: ['50%', '44%'],
         data: stats.by_category,
-        label: { formatter: '{d}%', fontSize: 11, color: '#64748b' },
+        label: { formatter: '{b}\n{d}%', fontSize: 13, color: '#475569', lineHeight: 18 },
         itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
       }],
     })
 
     line.setOption({
       tooltip: { trigger: 'axis' },
-      grid: { left: 50, right: 20, bottom: 30, top: 20 },
+      grid: { left: 56, right: 24, bottom: 34, top: 26 },
       xAxis: {
         type: 'category', data: stats.by_day.map(d => d.date.slice(8)),
-        axisLine: { lineStyle: { color: '#cbd5e1' } }, axisLabel: { color: '#94a3b8' },
+        axisLine: { lineStyle: { color: '#cbd5e1' } }, axisLabel: { color: '#94a3b8', fontSize: 12 },
       },
       yAxis: {
         type: 'value', splitLine: { lineStyle: { color: 'rgba(148,163,184,.15)' } },
-        axisLabel: { color: '#94a3b8' },
+        axisLabel: { color: '#94a3b8', fontSize: 12 },
       },
       series: [{
         type: 'line', smooth: true, data: stats.by_day.map(d => d.value),
@@ -65,21 +65,23 @@ export default function Stats() {
 
     bar.setOption({
       tooltip: {},
-      grid: { left: 70, right: 50, bottom: 20, top: 10 },
-      xAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(148,163,184,.15)' } }, axisLabel: { color: '#94a3b8' } },
+      grid: { left: 90, right: 80, bottom: 26, top: 24 },
+      xAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(148,163,184,.15)' } }, axisLabel: { color: '#94a3b8', fontSize: 12 } },
       yAxis: {
         type: 'category', data: stats.by_category.map(d => d.name).reverse(),
-        axisLabel: { color: '#475569', interval: 0 }, axisLine: { show: false }, axisTick: { show: false },
+        axisLabel: { color: '#334155', interval: 0, fontSize: 15, fontWeight: 600, margin: 14 },
+        axisLine: { show: false }, axisTick: { show: false },
       },
       series: [{
-        type: 'bar', data: stats.by_category.map(d => d.value).reverse(), barMaxWidth: 18,
+        type: 'bar', data: stats.by_category.map(d => d.value).reverse(),
+        barMaxWidth: 26, barCategoryGap: '45%',
         itemStyle: {
-          borderRadius: [0, 9, 9, 0],
+          borderRadius: [0, 10, 10, 0],
           color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
             { offset: 0, color: '#8b5cf6' }, { offset: 1, color: '#6366f1' },
           ]),
         },
-        label: { show: true, position: 'right', color: '#64748b', fontSize: 11, fontStyle: 'italic', formatter: p => fmt(p.value) },
+        label: { show: true, position: 'right', distance: 10, color: '#475569', fontSize: 14, fontWeight: 600, fontStyle: 'italic', formatter: p => fmt(p.value) },
       }],
     })
   }, [stats])
@@ -87,7 +89,7 @@ export default function Stats() {
   const { expense, income } = stats.summary
 
   return (
-    <>
+    <div className="stagger d-flex flex-column">
       <div className="month-nav mb-4">
         <button onClick={() => setMonth(m => monthShift(m, -1))}>‹</button>
         <div className="flex-grow-1 text-center fw-semibold">
@@ -96,7 +98,7 @@ export default function Stats() {
         <button onClick={() => setMonth(m => monthShift(m, 1))}>›</button>
       </div>
 
-      <div className="row g-2 mb-3">
+      <div className="row g-3 mb-4">
         <div className="col-4"><div className="stat-card stat-expense text-center">
           <div className="label">总支出</div><div className="value amount">{fmt(expense)}</div></div></div>
         <div className="col-4"><div className="stat-card stat-income text-center">
@@ -105,24 +107,24 @@ export default function Stats() {
           <div className="label">结余</div><div className="value amount">{fmt(income - expense)}</div></div></div>
       </div>
 
-      <div className="row g-3 mb-3">
+      <div className="row g-4 mb-4">
         <div className="col-md-6">
           <div className="card chart-card h-100">
             <div className="chart-title"><span className="dot" />分类占比</div>
-            <div ref={pieRef} style={{ height: 300 }} />
+            <div ref={pieRef} style={{ height: 320 }} />
           </div>
         </div>
         <div className="col-md-6">
           <div className="card chart-card h-100">
             <div className="chart-title"><span className="dot" />每日支出趋势</div>
-            <div ref={lineRef} style={{ height: 300 }} />
+            <div ref={lineRef} style={{ height: 320 }} />
           </div>
         </div>
       </div>
-      <div className="card chart-card mb-3">
+      <div className="card chart-card">
         <div className="chart-title"><span className="dot" />分类排行</div>
-        <div ref={barRef} style={{ height: 40 + stats.by_category.length * 40 }} />
+        <div ref={barRef} style={{ height: 80 + stats.by_category.length * 58 }} />
       </div>
-    </>
+    </div>
   )
 }

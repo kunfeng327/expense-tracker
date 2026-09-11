@@ -193,7 +193,7 @@ body {
 /* ---------- 图表卡片 ---------- */
 .chart-card { border-radius: var(--radius); }
 .chart-card .chart-title {
-  font-size: .9rem; font-weight: 600; padding: 14px 16px 0;
+  font-size: .95rem; font-weight: 600; padding: 18px 20px 6px;
   display: flex; align-items: center; gap: 8px;
 }
 .chart-title .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--primary); }
@@ -201,6 +201,153 @@ body {
 /* ---------- 进度条 ---------- */
 .progress { background: rgba(148, 163, 184, .18); border-radius: 999px; }
 .progress-bar { border-radius: 999px; transition: width .4s ease; }
+
+/* ---------- 宝可梦卡片 ---------- */
+.poke-card { overflow: hidden; }
+.poke-orb {
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, var(--type-color) 0%, transparent 70%);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+  animation: poke-pop .35s ease-out;
+}
+.poke-orb::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle, transparent 60%, rgba(255,255,255,.55) 65%, transparent 70%);
+  pointer-events: none;
+}
+.poke-img {
+  width: 170px; height: 170px; object-fit: contain;
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,.20));
+}
+.poke-shiny-btn {
+  position: absolute; top: 6px; right: 6px;
+  border: none; border-radius: 999px;
+  width: 34px; height: 34px; font-size: 17px; cursor: pointer;
+  background: rgba(255,255,255,.92);
+  box-shadow: 0 1px 4px rgba(0,0,0,.22);
+  transition: all .15s ease;
+}
+.poke-shiny-btn.on { background: #fde68a; box-shadow: 0 0 12px rgba(253,230,138,.9); }
+.poke-shiny-btn:hover { transform: scale(1.1); }
+.poke-cry-btn {
+  border: none; border-radius: 999px;
+  width: 30px; height: 30px; font-size: 14px; cursor: pointer;
+  background: var(--type-color, var(--primary)); color: #fff;
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,.3);
+  transition: transform .15s ease;
+}
+.poke-cry-btn:hover { transform: scale(1.12); }
+.poke-cry-btn:active { transform: scale(.92); }
+.poke-type-badge {
+  display: inline-block; padding: 4px 14px;
+  border-radius: 999px; color: #fff;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: .04em; text-transform: capitalize;
+  text-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+@keyframes poke-pop {
+  from { transform: scale(.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ========== 灵动动效 ========== */
+
+/* 入场:元素依次浮现 */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop-in {
+  from { transform: scale(.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.stagger > * { animation: fade-up .45s ease-out both; }
+.stagger > *:nth-child(1) { animation-delay: .02s; }
+.stagger > *:nth-child(2) { animation-delay: .08s; }
+.stagger > *:nth-child(3) { animation-delay: .14s; }
+.stagger > *:nth-child(4) { animation-delay: .2s; }
+.stagger > *:nth-child(5) { animation-delay: .26s; }
+.stagger > *:nth-child(n+6) { animation-delay: .32s; }
+
+/* 列表项逐条滑入 */
+.record-item {
+  animation: fade-up .35s ease-out both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+/* 顶栏:流动渐变 */
+.topbar {
+  background: linear-gradient(120deg, #4f46e5, #8b5cf6, #6366f1, #a78bfa);
+  background-size: 300% 100%;
+  animation: flow 12s linear infinite;
+}
+@keyframes flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 汇总卡:入场弹出 + 悬浮上浮 */
+.stat-card { animation: pop-in .4s ease-out both; }
+.stat-card:hover { transform: translateY(-4px) scale(1.02); }
+
+/* 所有卡片通用悬浮 */
+.card-hover, .chart-card { transition: transform .18s ease, box-shadow .18s ease; }
+.card-hover:hover, .chart-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+
+/* 按钮:按压回弹手感 */
+.btn { transition: transform .12s ease, box-shadow .12s ease, filter .15s ease; }
+.btn:active { transform: translateY(2px) scale(.97); }
+.cat-chip:active { transform: scale(.93); }
+.month-nav button:active { transform: scale(.85); }
+.month-nav button:hover { transform: scale(1.08); }
+
+/* 悬浮按钮:呼吸光圈 */
+.fab::before {
+  content: ""; position: absolute; inset: -4px;
+  border-radius: 50%; border: 2px solid rgba(99, 102, 241, .45);
+  animation: pulse-ring 2.2s ease-out infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(.9); opacity: 1; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* 底部导航:选中图标弹跳 */
+.bottom-nav a.active .nav-icon { animation: bounce-in .35s ease-out; }
+@keyframes bounce-in {
+  0% { transform: translateY(6px) scale(.6); opacity: 0; }
+  60% { transform: translateY(-3px) scale(1.1); }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* 预算进度条:流动微光 */
+.progress-bar {
+  position: relative; overflow: hidden;
+  background-image: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 2.4s linear infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 图标呼吸 */
+.record-icon { transition: transform .18s ease; }
+.record-item:hover .record-icon { transform: scale(1.15) rotate(-6deg); }
+
+/* 弹窗:弹入 */
+.modal-shell .modal-dialog { animation: pop-in .28s cubic-bezier(.34,1.56,.64,1); }
+
+/* 加载/骨架微动 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px) rotate(-4deg); }
+  75% { transform: translateX(2px) rotate(4deg); }
+}
+.loading-shake { display: inline-block; animation: shake .6s ease-in-out infinite; }
 
 /* ---------- 空状态 ---------- */
 .empty-state { padding: 48px 0; text-align: center; color: var(--muted); }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { api, fmt, monthShift } from '../api.js'
+import PokemonCard from '../components/PokemonCard.jsx'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -81,7 +82,7 @@ export default function Home() {
   const remaining = budget.total - expense
 
   return (
-    <>
+    <div className="stagger d-flex flex-column">
       {/* 月份切换 */}
       <div className="month-nav mb-4">
         <button onClick={() => setMonth(m => monthShift(m, -1))}>‹</button>
@@ -131,10 +132,13 @@ export default function Home() {
            onClick={e => { e.preventDefault(); setShowBudgetModal(true) }}>🎯 设置本月预算</a>
       )}
 
+      {/* 随机宝可梦彩蛋 */}
+      <PokemonCard />
+
       {/* 记录列表 */}
       <div className="card" style={{ overflow: 'hidden' }}>
-        {records.length ? records.map(r => (
-          <div key={r.id} className="record-item">
+        {records.length ? records.map((r, i) => (
+          <div key={r.id} className="record-item" style={{ '--i': i }}>
             <div className={`record-icon ${r.type === 'income' ? 'income' : ''}`}>{emojiOf(r.category)}</div>
             <div className="flex-grow-1 min-w-0">
               <div className="d-flex align-items-center gap-2">
@@ -250,8 +254,8 @@ export default function Home() {
                            onChange={e => setBudgetForm(f => ({
                              ...f, category_budget: { ...f.category_budget, [c.name]: e.target.value },
                            }))} />
-                  </div>
-                ))}
+          </div>
+        ))}
               </div>
               <div className="modal-footer px-3 pb-3">
                 <button className="btn btn-light rounded-3 px-4" onClick={() => setShowBudgetModal(false)}>取消</button>
@@ -261,6 +265,6 @@ export default function Home() {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }
