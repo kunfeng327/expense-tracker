@@ -203,9 +203,10 @@ body {
 .progress-bar { border-radius: 999px; transition: width .4s ease; }
 
 /* ---------- 宝可梦卡片 ---------- */
-.poke-card { overflow: hidden; }
+.poke-card { overflow: hidden; min-height: 330px; display: flex; flex-direction: column; }
+.poke-card .flex-grow-1 { flex: 1; }
 .poke-orb {
-  width: 200px; height: 200px; border-radius: 50%;
+  width: 150px; height: 150px; border-radius: 50%;
   background: radial-gradient(circle, var(--type-color) 0%, transparent 70%);
   display: flex; align-items: center; justify-content: center;
   position: relative;
@@ -217,7 +218,7 @@ body {
   pointer-events: none;
 }
 .poke-img {
-  width: 170px; height: 170px; object-fit: contain;
+  width: 125px; height: 125px; object-fit: contain;
   filter: drop-shadow(0 8px 12px rgba(0,0,0,.20));
 }
 .poke-shiny-btn {
@@ -246,6 +247,197 @@ body {
   letter-spacing: .04em; text-transform: capitalize;
   text-shadow: 0 1px 2px rgba(0,0,0,.2);
 }
+/* ---------- 单词卡片 ---------- */
+.word-card { overflow: hidden; height: 215px; display: flex; flex-direction: column; justify-content: center; }
+.word-body { animation: poke-pop .35s ease-out; }
+.word-text {
+  font-family: "Inter", "Times New Roman", serif;
+  font-style: italic;
+  font-size: clamp(1.05rem, 4.5vw, 1.6rem); letter-spacing: .5px;
+  word-break: break-all; text-align: center;
+  background: linear-gradient(120deg, var(--primary-deep), var(--violet));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.word-speak-btn {
+  border: none; border-radius: 999px;
+  width: 32px; height: 32px; font-size: 15px; cursor: pointer;
+  background: linear-gradient(120deg, var(--primary-deep), var(--violet));
+  color: #fff;
+  box-shadow: 0 2px 10px -2px rgba(99,102,241,.55);
+  transition: transform .15s ease;
+}
+.word-speak-btn:hover { transform: scale(1.12); }
+.word-speak-btn:active { transform: scale(.92); }
+.word-speak-btn.playing { animation: word-sound 0.9s ease-out; }
+@keyframes word-sound {
+  0%, 100% { transform: scale(1); }
+  15%, 45%, 75% { transform: scale(1.25); }
+  30%, 60% { transform: scale(1.05); }
+}
+.word-reveal-btn {
+  display: block; margin: 10px auto 0;
+  border: 1.5px dashed rgba(148,163,184,.45); border-radius: 999px;
+  background: rgba(99,102,241,.05); color: var(--muted);
+  padding: 5px 18px; font-size: .8rem; cursor: pointer;
+  transition: all .15s ease;
+}
+.word-reveal-btn:hover { border-color: var(--primary); color: var(--primary-deep); background: rgba(99,102,241,.1); }
+.word-meaning {
+  margin: 10px auto 0; max-width: fit-content;
+  background: linear-gradient(120deg, rgba(99,102,241,.10), rgba(139,92,246,.10));
+  border-radius: 12px; padding: 6px 18px;
+  font-weight: 600; cursor: pointer;
+  animation: poke-pop .3s ease-out;
+}
+
+/* ---------- 随想笔记本 ---------- */
+.note-preview {
+  display: flex; align-items: center; gap: 10px;
+  border-radius: 14px; padding: 10px 12px;
+  background: linear-gradient(120deg, rgba(99,102,241,.06), rgba(139,92,246,.08));
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.note-preview:hover { transform: translateY(-2px); background: rgba(99,102,241,.12); }
+.note-mood {
+  font-size: 30px; line-height: 1;
+  display: inline-block;
+  animation: weather-float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,.12));
+}
+.note-emoji-btn {
+  border: 1.5px solid rgba(148,163,184,.35); border-radius: 12px;
+  background: #fff; font-size: 24px; line-height: 1;
+  width: 44px; height: 44px; cursor: pointer;
+  transition: all .15s ease;
+}
+.note-emoji-btn.small-size { width: 36px; height: 36px; font-size: 18px; border-radius: 10px; }
+.note-emoji-btn:hover { border-color: var(--primary); transform: scale(1.12); }
+.note-emoji-btn.active {
+  border-color: transparent;
+  background: linear-gradient(120deg, var(--primary-deep), var(--violet));
+  box-shadow: 0 4px 14px -4px rgba(99,102,241,.55);
+}
+.note-history { max-height: 200px; overflow-y: auto; }
+.note-history-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 4px; border-bottom: 1px solid rgba(148,163,184,.12);
+  animation: poke-pop .25s ease-out;
+}
+.note-history-item:last-child { border-bottom: none; }
+
+/* ---------- 日语卡片 ---------- */
+.jp-card {
+  border-top: 3px solid #58cc02;
+  height: 250px;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  padding: 18px 18px 14px !important;
+  gap: 6px;
+}
+.jp-card > .d-flex { flex: 1; align-items: center; min-height: 0; gap: 18px !important; }
+.jp-bird-btn { border: none; background: none; padding: 0; cursor: pointer; line-height: 0; }
+.jp-bird { animation: bird-bob 2.2s ease-in-out infinite; }
+.jp-bird .jp-wing { transform-box: fill-box; transform-origin: center; animation: bird-wing 2.2s ease-in-out infinite; }
+.jp-bird .jp-eye { transform-box: fill-box; transform-origin: center; animation: bird-blink 4s infinite; }
+.jp-bird.talking { animation: bird-hop .45s ease-in-out infinite; }
+.jp-bird .jp-beak-bottom, .jp-bird .jp-wing { transform-box: fill-box; }
+.jp-bird .jp-beak-bottom { transform-origin: center top; }
+.jp-bird.talking .jp-beak-bottom { animation: bird-talk .22s ease-in-out infinite alternate; }
+@keyframes bird-bob {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-5px) rotate(2deg); }
+}
+@keyframes bird-hop {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes bird-wing {
+  0%, 100% { transform: rotate(15deg) scaleX(1); }
+  50% { transform: rotate(-12deg) scaleX(.85); }
+}
+@keyframes bird-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(.1); }
+}
+@keyframes bird-talk {
+  from { transform: translateY(0) scaleY(.6); }
+  to { transform: translateY(3px) scaleY(1.3); }
+}
+.jp-kana {
+  font-size: 2.8rem; line-height: 1.1;
+  background: linear-gradient(120deg, #58cc02, #2e7d32);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.jp-kana-sm { font-size: 1.5rem; }
+.jp-word { font-size: 1.7rem; color: #2e7d32; }
+.jp-speak { background: linear-gradient(120deg, #58cc02, #2e7d32); }
+.jp-roll { color: #2e7d32; border-color: rgba(88,204,2,.5); }
+.jp-roll:hover { background: rgba(88,204,2,.12); color: #1b5e20; }
+
+/* ---------- 练习记录 ---------- */
+.practice-date {
+  font-size: .72rem; color: var(--muted); font-weight: 600;
+  padding: 8px 16px 4px;
+  background: rgba(99,102,241,.04);
+  border-bottom: 1px solid rgba(148,163,184,.12);
+}
+.practice-bpm {
+  font-size: .72rem; font-weight: 700;
+  color: var(--primary-deep);
+  background: rgba(99,102,241,.10);
+  border-radius: 999px; padding: 2px 10px;
+}
+
+/* ---------- 个人资料 ---------- */
+.profile-card { overflow: hidden; }
+.profile-avatar {
+  width: 84px; height: 84px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 44px;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,.9), transparent 45%),
+    linear-gradient(135deg, var(--primary), var(--violet));
+  box-shadow: var(--shadow-lg);
+  animation: weather-float 3s ease-in-out infinite;
+}
+.profile-avatar-btn .avatar { transition: transform .15s ease; }
+.profile-avatar-btn:hover .avatar { transform: scale(1.15) rotate(-6deg); }
+.birthday-banner {
+  background: linear-gradient(120deg, #fde68a, #fca5a5);
+  color: #7c2d12; font-weight: 700; border-radius: 999px;
+  padding: 5px 16px; font-size: .82rem;
+  max-width: fit-content; margin: 8px auto 0;
+  animation: weather-pulse 1.6s ease-in-out infinite;
+}
+
+/* ---------- 天气卡片 ---------- */
+.weather-card { color: #fff; border: none; min-height: 158px; }
+.weather-emoji {
+  font-size: 52px; line-height: 1;
+  display: inline-block;
+  animation: weather-float 3s ease-in-out infinite;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,.18));
+}
+.weather-rain-pill {
+  background: rgba(255,255,255,.22);
+  backdrop-filter: blur(4px);
+  border-radius: 999px; padding: 6px 14px;
+  font-size: .8rem; font-weight: 600;
+  text-align: center;
+  animation: weather-pulse 2s ease-in-out infinite;
+}
+@keyframes weather-float {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-6px) rotate(3deg); }
+}
+@keyframes weather-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
 @keyframes poke-pop {
   from { transform: scale(.6); opacity: 0; }
   to { transform: scale(1); opacity: 1; }

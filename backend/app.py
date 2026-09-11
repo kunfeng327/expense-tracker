@@ -3,6 +3,7 @@ from flask_cors import CORS
 from database import get_conn, init_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+from datetime import datetime, date
 import json
 
 app = Flask(__name__)
@@ -95,6 +96,55 @@ def me():
     if not payload:
         return jsonify(error="未登录或登录已过期"), 401
     return ok({"username": payload["username"]})
+
+
+# ---------- 个人资料 API ----------
+
+@app.route("/api/profile", methods=["GET"])
+def get_profile():
+    conn = get_conn()
+    with conn.cursor() as c:
+        c.execute("SELECT username, gender, birthday, avatar, created_at FROM users WHERE id=%s", (g.user_id,))
+        row = c.fetchone()
+    conn.close()
+    if not row:
+        return jsonify(error="用户不存在"), 404
+    row["birthday"] = row["birthday"].isoformat() if row.get("birthday") else None
+    row["created_at"] = row["created_at"].isoformat() if row.get("created_at") else None
+    return ok(row)
+
+
+@app.route("/api/profile", methods=["POST"])
+def set_profile():
+    data = request.get_json() or {}
+    gender = data.get("gender")
+    birthday = data.get("birthday")
+    avatar = (data.get("avatar") or "").strip() or None
+    if gender not in (None, "", "male", "female", "other"):
+        return jsonify(error="性别取值不合法"), 400
+    gender = gender or None
+    if birthday in ("", None):
+        birthday = None
+    else:
+        try:
+            birthday = datetime.strptime(birthday, "%Y-%m-%d").date()
+            if birthday > date.today():
+                return jsonify(error="生日不能是未来日期"), 400
+        except ValueError:
+            return jsonify(error="生日格式应为 YYYY-MM-DD"), 400
+    if avatar and len(avatar) > 16:
+        return jsonify(error="头像太长了"), 400
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            c.execute(
+                "UPDATE users SET gender=%s, birthday=%s, avatar=%s WHERE id=%s",
+                (gender, birthday, avatar, g.user_id),
+            )
+        conn.commit()
+    finally:
+        conn.close()
+    return ok({"gender": gender, "birthday": birthday.isoformat() if birthday else None, "avatar": avatar})
 
 
 @app.route("/api/records", methods=["GET"])
@@ -274,6 +324,78 @@ def get_stats(month):
         by_day = [{"date": r["date"], "value": float(r["value"])} for r in c.fetchall()]
     conn.close()
     return ok({"summary": summary, "by_category": by_category, "by_day": by_day})
+
+
+# ---------- 练习记录 API(吉他 / 钢琴) ----------
+
+@app.route("/api/practice", methods=["GET"])
+def list_practice():
+    conn = get_conn()
+    with conn.cursor() as c:
+        c.execute(
+            "SELECT id, DATE_FORMAT(date, '%%Y-%%m-%%d') AS date, instrument, kind, bpm, minutes, note "
+            "FROM practice_logs WHERE user_id=%s ORDER BY date DESC, id DESC LIMIT 200",
+            (g.user_id,),
+        )
+        rows = c.fetchall()
+    conn.close()
+    return ok(rows)
+
+
+@app.route("/api/practice", methods=["POST"])
+def add_practice():
+    data = request.get_json() or {}
+    instrument = data.get("instrument")
+    kind = data.get("kind")
+    bpm = data.get("bpm")
+    minutes = data.get("minutes")
+    date = data.get("date")
+    note = (data.get("note") or "").strip() or None
+    if instrument not in ("guitar", "piano"):
+        return jsonify(error="乐器只支持 guitar / piano"), 400
+    if kind not in ("spider", "scale", "song", "technique"):
+        return jsonify(error="练习类型不合法"), 400
+    if date:
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
+        except ValueError:
+            return jsonify(error="日期格式应为 YYYY-MM-DD"), 400
+    else:
+        date = datetime.now().strftime("%Y-%m-%d")
+    try:
+        bpm = int(bpm) if bpm not in (None, "") else None
+        minutes = int(minutes) if minutes not in (None, "") else None
+    except (TypeError, ValueError):
+        return jsonify(error="BPM 和时长需为数字"), 400
+    if bpm is not None and not (20 <= bpm <= 400):
+        return jsonify(error="BPM 需在 20-400 之间"), 400
+    if minutes is not None and not (1 <= minutes <= 24 * 60):
+        return jsonify(error="时长需在 1-1440 分钟之间"), 400
+    if minutes is None:
+        return jsonify(error="请填写练习时长"), 400
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            c.execute(
+                "INSERT INTO practice_logs(user_id, date, instrument, kind, bpm, minutes, note) "
+                "VALUES (%s,%s,%s,%s,%s,%s,%s)",
+                (g.user_id, date, instrument, kind, bpm, minutes, note),
+            )
+            pid = c.lastrowid
+        conn.commit()
+    finally:
+        conn.close()
+    return ok({"id": pid})
+
+
+@app.route("/api/practice/<int:pid>", methods=["DELETE"])
+def delete_practice(pid):
+    conn = get_conn()
+    with conn.cursor() as c:
+        c.execute("DELETE FROM practice_logs WHERE id=%s AND user_id=%s", (pid, g.user_id))
+    conn.commit()
+    conn.close()
+    return ok({"ok": True})
 
 
 if __name__ == "__main__":

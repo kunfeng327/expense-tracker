@@ -9,13 +9,11 @@ export default function Stats() {
   const [stats, setStats] = useState({ summary: { expense: 0, income: 0 }, by_category: [], by_day: [] })
   const pieRef = useRef(null)
   const lineRef = useRef(null)
-  const barRef = useRef(null)
   const charts = useRef({})
 
   useEffect(() => {
     charts.current.pie = echarts.init(pieRef.current)
     charts.current.line = echarts.init(lineRef.current)
-    charts.current.bar = echarts.init(barRef.current)
     const onResize = () => Object.values(charts.current).forEach(c => c.resize())
     window.addEventListener('resize', onResize)
     return () => { window.removeEventListener('resize', onResize); Object.values(charts.current).forEach(c => c.dispose()) }
@@ -24,7 +22,7 @@ export default function Stats() {
   useEffect(() => { api.getStats(month).then(setStats) }, [month])
 
   useEffect(() => {
-    const { pie, line, bar } = charts.current
+    const { pie, line } = charts.current
     if (!pie) return
 
     pie.setOption({
@@ -60,28 +58,6 @@ export default function Stats() {
             { offset: 1, color: 'rgba(99,102,241,0)' },
           ]),
         },
-      }],
-    })
-
-    bar.setOption({
-      tooltip: {},
-      grid: { left: 90, right: 80, bottom: 26, top: 24 },
-      xAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(148,163,184,.15)' } }, axisLabel: { color: '#94a3b8', fontSize: 12 } },
-      yAxis: {
-        type: 'category', data: stats.by_category.map(d => d.name).reverse(),
-        axisLabel: { color: '#334155', interval: 0, fontSize: 15, fontWeight: 600, margin: 14 },
-        axisLine: { show: false }, axisTick: { show: false },
-      },
-      series: [{
-        type: 'bar', data: stats.by_category.map(d => d.value).reverse(),
-        barMaxWidth: 26, barCategoryGap: '45%',
-        itemStyle: {
-          borderRadius: [0, 10, 10, 0],
-          color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
-            { offset: 0, color: '#8b5cf6' }, { offset: 1, color: '#6366f1' },
-          ]),
-        },
-        label: { show: true, position: 'right', distance: 10, color: '#475569', fontSize: 14, fontWeight: 600, fontStyle: 'italic', formatter: p => fmt(p.value) },
       }],
     })
   }, [stats])
@@ -120,10 +96,6 @@ export default function Stats() {
             <div ref={lineRef} style={{ height: 320 }} />
           </div>
         </div>
-      </div>
-      <div className="card chart-card">
-        <div className="chart-title"><span className="dot" />分类排行</div>
-        <div ref={barRef} style={{ height: 80 + stats.by_category.length * 58 }} />
       </div>
     </div>
   )

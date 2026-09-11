@@ -27,6 +27,8 @@ export const api = {
     method: 'POST', body: JSON.stringify(body),
   }),
   me: () => req('/api/auth/me'),
+  getProfile: () => req('/api/profile'),
+  setProfile: body => req('/api/profile', { method: 'POST', body: JSON.stringify(body) }),
   listRecords: month => req(`/api/records?month=${month}`),
   addRecord: body => req('/api/records', { method: 'POST', body: JSON.stringify(body) }),
   updateRecord: (id, body) => req(`/api/records/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
@@ -37,6 +39,9 @@ export const api = {
   getBudget: month => req(`/api/budget/${month}`),
   setBudget: (month, body) => req(`/api/budget/${month}`, { method: 'POST', body: JSON.stringify(body) }),
   getStats: month => req(`/api/stats/${month}`),
+  listPractice: () => req('/api/practice'),
+  addPractice: body => req('/api/practice', { method: 'POST', body: JSON.stringify(body) }),
+  deletePractice: id => req(`/api/practice/${id}`, { method: 'DELETE' }),
 }
 
 export const fmt = n => '¥' + Number(n || 0).toFixed(2)

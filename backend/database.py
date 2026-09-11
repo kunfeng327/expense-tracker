@@ -69,6 +69,25 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         """)
+        # 用户资料字段:性别 / 生日 / 头像 emoji
+        _add_column_if_missing(c, "users", "gender", "VARCHAR(10) NULL")
+        _add_column_if_missing(c, "users", "birthday", "DATE NULL")
+        _add_column_if_missing(c, "users", "avatar", "VARCHAR(16) NULL")
+        # 练习记录(吉他 / 钢琴):爬格子、音阶、曲目等
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS practice_logs (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                date DATE NOT NULL,
+                instrument VARCHAR(10) NOT NULL,
+                kind VARCHAR(20) NOT NULL,
+                bpm INT NULL,
+                minutes INT NOT NULL,
+                note VARCHAR(200) NULL,
+                INDEX idx_user_date (user_id, date)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        """)
+
         # 旧表迁移:records / budgets 增加 user_id(已有数据归给第一个用户)
         _add_column_if_missing(c, "records", "user_id", "INT")
         _add_column_if_missing(c, "budgets", "user_id", "INT")

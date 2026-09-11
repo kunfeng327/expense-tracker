@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { api, fmt, monthShift } from '../api.js'
 import PokemonCard from '../components/PokemonCard.jsx'
+import WeatherCard from '../components/WeatherCard.jsx'
+import WordCard from '../components/WordCard.jsx'
+import JapaneseCard from '../components/JapaneseCard.jsx'
+import NoteCard from '../components/NoteCard.jsx'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -103,37 +107,41 @@ export default function Home() {
       </div>
 
       {/* 预算 */}
-      {budget.total > 0 ? (
-        <div className="card p-3 mb-3">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <span className="fw-semibold small">🎯 本月预算</span>
+      <div className="card p-3 mb-3">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <span className="fw-semibold small">🎯 本月预算</span>
+          {budget.total > 0 && (
             <span className="small">
               <span className="text-muted amount">{fmt(expense)} / {fmt(budget.total)}</span>
               <span className={`ms-2 fw-bold ${pct >= 100 ? 'text-danger' : pct >= 80 ? 'text-warning' : 'text-success'}`}>
                 {pct.toFixed(0)}%
               </span>
             </span>
-          </div>
-          <div className="progress" style={{ height: 10 }}>
-            <div className={`progress-bar ${pct >= 100 ? 'bg-danger' : pct >= 80 ? 'bg-warning' : 'bg-success'}`}
-                 style={{ width: pct + '%' }} />
-          </div>
-          <div className="d-flex justify-content-between mt-2">
-            <span className="small text-muted amount">
-              {remaining >= 0 ? `还可花 ${fmt(remaining)}` : `已超支 ${fmt(-remaining)} 😰`}
-            </span>
-            <a href="#" className="small text-decoration-none" style={{ color: 'var(--primary)' }}
-               onClick={e => { e.preventDefault(); setShowBudgetModal(true) }}>调整</a>
-          </div>
+          )}
         </div>
-      ) : (
-        <a href="#" className="d-block small text-end mb-3 text-decoration-none"
-           style={{ color: 'var(--primary)' }}
-           onClick={e => { e.preventDefault(); setShowBudgetModal(true) }}>🎯 设置本月预算</a>
-      )}
+        <div className="progress" style={{ height: 10 }}>
+          <div className={`progress-bar ${budget.total > 0 ? (pct >= 100 ? 'bg-danger' : pct >= 80 ? 'bg-warning' : 'bg-success') : ''}`}
+               style={{ width: budget.total > 0 ? pct + '%' : '0%' }} />
+        </div>
+        <div className="d-flex justify-content-between mt-2">
+          <span className="small text-muted amount">
+            {budget.total > 0
+              ? (remaining >= 0 ? `还可花 ${fmt(remaining)}` : `已超支 ${fmt(-remaining)} 😰`)
+              : '还没有设置预算,设一个控制开销吧 ✨'}
+          </span>
+          <a href="#" className="small text-decoration-none" style={{ color: 'var(--primary)' }}
+             onClick={e => { e.preventDefault(); setShowBudgetModal(true) }}>{budget.total > 0 ? '调整' : '去设置'}</a>
+        </div>
+      </div>
 
-      {/* 随机宝可梦彩蛋 */}
-      <PokemonCard />
+      {/* 天气 / 单词 / 宝可梦:一行两个 */}
+      <div className="row g-2 align-items-stretch mb-3">
+        <div className="col-6 d-flex"><WeatherCard /></div>
+        <div className="col-6 d-flex"><WordCard /></div>
+        <div className="col-6 d-flex"><PokemonCard /></div>
+        <div className="col-6 d-flex"><NoteCard /></div>
+        <div className="col-6 d-flex"><JapaneseCard /></div>
+      </div>
 
       {/* 记录列表 */}
       <div className="card" style={{ overflow: 'hidden' }}>
