@@ -1,0 +1,48 @@
+const BASE = ''
+
+async function req(path, options = {}) {
+  const token = localStorage.getItem('token')
+  const res = await fetch(BASE + path, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: 'Bearer ' + token } : {}),
+    },
+    ...options,
+  })
+  if (res.status === 401 && !path.startsWith('/api/auth')) {
+    localStorage.removeItem('token')
+    localStorage.removeItem('username')
+    location.reload() // 触发重新进入登录页
+    throw new Error('登录已过期')
+  }
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}))
+    throw new Error(err.error || `请求失败 (${res.status})`)
+  }
+  return res.json()
+}
+
+export const api = {
+  auth: (mode, body) => req(`/api/auth/${mode === 'login' ? 'login' : 'register'}`, {
+    method: 'POST', body: JSON.stringify(body),
+  }),
+  me: () => req('/api/auth/me'),
+  listRecords: month => req(`/api/records?month=${month}`),
+  addRecord: body => req('/api/records', { method: 'POST', body: JSON.stringify(body) }),
+  updateRecord: (id, body) => req(`/api/records/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  deleteRecord: id => req(`/api/records/${id}`, { method: 'DELETE' }),
+  listCategories: () => req('/api/categories'),
+  addCategory: body => req('/api/categories', { method: 'POST', body: JSON.stringify(body) }),
+  deleteCategory: id => req(`/api/categories/${id}`, { method: 'DELETE' }),
+  getBudget: month => req(`/api/budget/${month}`),
+  setBudget: (month, body) => req(`/api/budget/${month}`, { method: 'POST', body: JSON.stringify(body) }),
+  getStats: month => req(`/api/stats/${month}`),
+}
+
+export const fmt = n => '¥' + Number(n || 0).toFixed(2)
+
+export function monthShift(month, d) {
+  const [y, m] = month.split('-').map(Number)
+  const dt = new Date(y, m - 1 + d, 1)
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}`
+}
