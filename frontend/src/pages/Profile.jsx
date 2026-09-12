@@ -41,6 +41,9 @@ export default function Profile({ onSaved }) {
   const [form, setForm] = useState({ gender: '', birthday: '', avatar: '👤' })
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [showDelete, setShowDelete] = useState(false)
+  const [delPassword, setDelPassword] = useState('')
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     api.getProfile().then(p => {
@@ -58,6 +61,25 @@ export default function Profile({ onSaved }) {
       setTimeout(() => setSaved(false), 2000)
     } catch (e) { alert(e.message) }
     setSaving(false)
+  }
+
+  // 注销账号:验证密码后删除全部数据,不可恢复
+  const confirmDelete = async () => {
+    if (!delPassword) return alert('请输入密码确认')
+    if (!confirm('确定要注销账号吗?所有数据将被永久删除,无法恢复!')) return
+    setDeleting(true)
+    try {
+      await api.deleteAccount({ password: delPassword })
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      localStorage.removeItem('avatar')
+      alert('账号已注销,期待再相逢 🌱')
+      location.hash = '#/login'
+      location.reload()
+    } catch (e) {
+      alert('注销失败:' + e.message)
+      setDeleting(false)
+    }
   }
 
   const age = calcAge(form.birthday)
@@ -117,6 +139,42 @@ export default function Profile({ onSaved }) {
       {profile?.created_at && (
         <div className="small text-muted text-center">
           🗓️ 于 {profile.created_at.slice(0, 10)} 加入账本
+        </div>
+      )}
+
+      {/* 危险区:注销账号 */}
+      <div className="card p-3 mt-3 border-danger-subtle">
+        <div className="small text-muted fw-semibold mb-1">⚠️ 危险区</div>
+        <div className="small text-muted mb-2">注销后账号和全部数据(消费记录、随想、练习记录等)将被永久删除,无法恢复。</div>
+        <button className="btn btn-outline-danger rounded-3 w-100" onClick={() => { setShowDelete(true); setDelPassword('') }}>
+          🗑️ 注销账号
+        </button>
+      </div>
+
+      {showDelete && (
+        <div className="modal d-block modal-shell" tabIndex="-1" onClick={() => !deleting && setShowDelete(false)}>
+          <div className="modal-dialog modal-dialog-centered" onClick={e => e.stopPropagation()}>
+            <div className="modal-content p-2">
+              <div className="modal-header">
+                <h5 className="modal-title fw-bold text-danger">⚠️ 确认注销账号</h5>
+                <button className="btn-close" disabled={deleting} onClick={() => setShowDelete(false)} />
+              </div>
+              <div className="modal-body">
+                <div className="small text-muted mb-3">
+                  此操作<b className="text-danger">不可恢复</b>,将删除你的账号及全部数据。请输入登录密码确认是本人操作。
+                </div>
+                <input type="password" className="form-control" placeholder="输入登录密码"
+                       value={delPassword} disabled={deleting}
+                       onChange={e => setDelPassword(e.target.value)} />
+              </div>
+              <div className="modal-footer px-3 pb-3">
+                <button className="btn btn-light rounded-3 px-4" disabled={deleting} onClick={() => setShowDelete(false)}>取消</button>
+                <button className="btn btn-danger rounded-3 px-4" disabled={deleting || !delPassword} onClick={confirmDelete}>
+                  {deleting ? '注销中…' : '确认注销'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

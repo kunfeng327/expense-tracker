@@ -1,0 +1,63 @@
+- generic [ref=f14e3]:
+  - navigation [ref=f14e4]:
+    - generic [ref=f14e5]:
+      - generic [ref=f14e6]: ✦ 我的账本
+      - generic [ref=f14e7]:
+        - link "👤" [ref=f14e8] [cursor=pointer]:
+          - /url: "#/profile"
+        - generic [ref=f14e10]: deltest
+        - link "退出" [ref=f14e11] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=f14e14]:
+    - generic [ref=f14e15]:
+      - generic "选一个喜欢的头像" [ref=f14e16]: 👤
+      - generic [ref=f14e17]: deltest
+      - generic [ref=f14e18]: 完善资料,展示你的年龄和星座
+    - generic [ref=f14e19]:
+      - generic [ref=f14e20]: 🎯 头像
+      - generic [ref=f14e21]:
+        - button "👤" [ref=f14e22] [cursor=pointer]
+        - button "🐱" [ref=f14e23] [cursor=pointer]
+        - button "🐶" [ref=f14e24] [cursor=pointer]
+        - button "🦊" [ref=f14e25] [cursor=pointer]
+        - button "🐼" [ref=f14e26] [cursor=pointer]
+        - button "🐧" [ref=f14e27] [cursor=pointer]
+        - button "🐸" [ref=f14e28] [cursor=pointer]
+        - button "🦁" [ref=f14e29] [cursor=pointer]
+        - button "🐯" [ref=f14e30] [cursor=pointer]
+        - button "🦄" [ref=f14e31] [cursor=pointer]
+        - button "🐙" [ref=f14e32] [cursor=pointer]
+        - button "🍀" [ref=f14e33] [cursor=pointer]
+        - button "⭐" [ref=f14e34] [cursor=pointer]
+        - button "🌙" [ref=f14e35] [cursor=pointer]
+        - button "🍎" [ref=f14e36] [cursor=pointer]
+        - button "🧋" [ref=f14e37] [cursor=pointer]
+      - generic [ref=f14e38]: 性别
+      - generic [ref=f14e39]:
+        - button "👦 男" [ref=f14e40] [cursor=pointer]
+        - button "👧 女" [ref=f14e41] [cursor=pointer]
+        - button "🌈 保密" [ref=f14e42] [cursor=pointer]
+      - generic [ref=f14e43]: 🎂 生日
+      - textbox [ref=f14e44]
+      - generic [ref=f14e45]:
+        - link "返回" [ref=f14e46] [cursor=pointer]:
+          - /url: "#/"
+        - button "保存" [ref=f14e47] [cursor=pointer]
+    - generic [ref=f14e48]: 🗓️ 于 2026-09-12 加入账本
+    - generic [ref=f14e49]:
+      - generic [ref=f14e50]: ⚠️ 危险区
+      - generic [ref=f14e51]: 注销后账号和全部数据(消费记录、随想、练习记录等)将被永久删除,无法恢复。
+      - button "🗑️ 注销账号" [ref=f14e52] [cursor=pointer]
+  - generic [ref=f14e53]:
+    - link "📒 记账" [ref=f14e54] [cursor=pointer]:
+      - /url: "#/"
+      - generic [ref=f14e55]: 📒
+      - text: 记账
+    - link "📊 统计" [ref=f14e56] [cursor=pointer]:
+      - /url: "#/stats"
+      - generic [ref=f14e57]: 📊
+      - text: 统计
+    - link "🎸 练习" [ref=f14e58] [cursor=pointer]:
+      - /url: "#/practice"
+      - generic [ref=f14e59]: 🎸
+      - text: 练习

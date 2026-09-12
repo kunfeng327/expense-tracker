@@ -1,0 +1,17 @@
+- generic [ref=f13e4]:
+  - generic [ref=f13e5]:
+    - generic [ref=f13e6]: 💰
+    - heading "我的账本" [level=4] [ref=f13e7]
+    - paragraph [ref=f13e8]: 欢迎回来,登录后继续记账
+  - generic [ref=f13e9]:
+    - generic [ref=f13e22]: 🎉 注册成功,请登录
+    - generic [ref=f13e10]:
+      - generic [ref=f13e11]:
+        - generic [ref=f13e12]: 用户名
+        - textbox "3-20 个字符" [ref=f13e13]: deltest
+      - generic [ref=f13e14]:
+        - generic [ref=f13e15]: 密码
+        - textbox "至少 6 位" [ref=f13e16]
+      - button "登 录" [ref=f13e23] [cursor=pointer]
+    - link "没有账号?去注册 →" [ref=f13e24] [cursor=pointer]:
+      - /url: "#"

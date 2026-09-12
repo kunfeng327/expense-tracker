@@ -1,0 +1,100 @@
+- generic [ref=f12e3]:
+  - navigation [ref=f12e4]:
+    - generic [ref=f12e5]:
+      - generic [ref=f12e6]: ✦ 我的账本
+      - generic [ref=f12e7]:
+        - link "🐱" [ref=f12e8] [cursor=pointer]:
+          - /url: "#/profile"
+        - generic [ref=f12e10]: pkf
+        - link "退出" [ref=f12e11] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=f12e15]:
+    - generic [ref=f12e18] [cursor=pointer]:
+      - generic [ref=f12e20]:
+        - generic [ref=f12e21]: 🌤️
+        - generic [ref=f12e22]: 今日天气
+        - generic [ref=f12e23]: 🔄 点击翻面查看
+      - generic [ref=f12e24]: 正在仰望天空… 🔭
+    - generic [ref=f12e28]:
+      - generic [ref=f12e29]:
+        - generic [ref=f12e30]: 📚 今日单词
+        - button "换一个" [ref=f12e31] [cursor=pointer]
+      - generic [ref=f12e32]:
+        - generic [ref=f12e33]:
+          - generic [ref=f12e34]: confront
+          - button "🔊" [ref=f12e35] [cursor=pointer]
+        - generic [ref=f12e36]: /kənˈfrʌnt/
+        - button "👀 想想意思,点击揭晓" [ref=f12e38] [cursor=pointer]
+    - generic [ref=f12e41] [cursor=pointer]:
+      - generic [ref=f12e43]:
+        - generic [ref=f12e44]: 🎲
+        - generic [ref=f12e45]: 今日偶遇
+        - generic [ref=f12e46]: 🔄 点击翻面看看是谁
+      - generic [ref=f12e48]:
+        - generic [ref=f12e49]:
+          - generic [ref=f12e50]: 🎲 今日偶遇
+          - button "换一只" [ref=f12e51]
+        - generic [ref=f12e52]:
+          - generic [ref=f12e53]: 🌿
+          - generic [ref=f12e54]: 草丛空空如也,网络好像不太顺畅
+          - button "再找一次" [ref=f12e55]
+    - generic [ref=f12e57]:
+      - generic [ref=f12e58]:
+        - generic [ref=f12e59]: 📔 随想笔记本
+        - button "✍️ 写一笔" [ref=f12e60] [cursor=pointer]
+      - generic [ref=f12e61]:
+        - generic "点击查看全文" [ref=f12e62] [cursor=pointer]:
+          - generic [ref=f12e63]: 😴
+          - generic [ref=f12e64]:
+            - generic [ref=f12e65]: hhhhh睡觉
+            - generic [ref=f12e66]: 🎵 ⭐ 9/12 09:57
+        - generic "点击查看全文" [ref=f12e67] [cursor=pointer]:
+          - generic [ref=f12e68]: 😭
+          - generic [ref=f12e69]:
+            - generic [ref=f12e70]: haoeeeee
+            - generic [ref=f12e71]: ☕ 9/12 08:14
+    - generic [ref=f12e73]:
+      - generic [ref=f12e74]:
+        - generic [ref=f12e75]: 🇯🇵 日语打卡
+        - generic [ref=f12e76]:
+          - button "五十音" [ref=f12e77] [cursor=pointer]
+          - button "单词" [ref=f12e78] [cursor=pointer]
+      - generic [ref=f12e79]:
+        - button "摸摸小鸟" [ref=f12e80] [cursor=pointer]
+        - generic [ref=f12e95]:
+          - generic [ref=f12e96]:
+            - generic [ref=f12e97]: ち
+            - generic [ref=f12e98]: チ
+          - button "👀 猜猜罗马音,点击揭晓" [ref=f12e100] [cursor=pointer]
+      - button "换一个" [ref=f12e101] [cursor=pointer]
+    - generic [ref=f12e103]:
+      - generic [ref=f12e104]:
+        - generic [ref=f12e105]: 🎧 每日听力
+        - button "换一句" [ref=f12e106] [cursor=pointer]
+      - generic [ref=f12e107]:
+        - button "🔊" [ref=f12e109] [cursor=pointer]
+        - button "👂 听听看,点击揭晓原文和中文" [ref=f12e111] [cursor=pointer]
+    - generic [ref=f12e113]:
+      - generic [ref=f12e114]:
+        - generic [ref=f12e115]: 🖼️ 今日名画
+        - button "换一幅" [ref=f12e116] [cursor=pointer]
+      - generic "点击换一幅" [ref=f12e117] [cursor=pointer]:
+        - generic [ref=f12e118]:
+          - img "Design for a Wall Monument" [ref=f12e120]
+          - generic [ref=f12e121]:
+            - generic [ref=f12e122]: Design for a Wall Monument
+            - generic [ref=f12e123]: Francesco di Giorgio Martini (ca. 1490)
+            - generic "点击查看完整简介" [ref=f12e124]: 钢笔和棕色墨水，刷子和棕色水洗，蓝色水粉，天鹅绒·约1490年
+  - generic [ref=f12e125]:
+    - link "📒 记账" [ref=f12e126] [cursor=pointer]:
+      - /url: "#/"
+      - generic [ref=f12e127]: 📒
+      - text: 记账
+    - link "📊 统计" [ref=f12e128] [cursor=pointer]:
+      - /url: "#/stats"
+      - generic [ref=f12e129]: 📊
+      - text: 统计
+    - link "🎸 练习" [ref=f12e130] [cursor=pointer]:
+      - /url: "#/practice"
+      - generic [ref=f12e131]: 🎸
+      - text: 练习

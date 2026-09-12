@@ -29,6 +29,7 @@ export const api = {
   me: () => req('/api/auth/me'),
   getProfile: () => req('/api/profile'),
   setProfile: body => req('/api/profile', { method: 'POST', body: JSON.stringify(body) }),
+  deleteAccount: body => req('/api/profile', { method: 'DELETE', body: JSON.stringify(body) }),
   listRecords: month => req(`/api/records?month=${month}`),
   addRecord: body => req('/api/records', { method: 'POST', body: JSON.stringify(body) }),
   updateRecord: (id, body) => req(`/api/records/${id}`, { method: 'PUT', body: JSON.stringify(body) }),

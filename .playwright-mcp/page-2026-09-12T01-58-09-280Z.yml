@@ -1,0 +1,16 @@
+- generic [ref=f13e4]:
+  - generic [ref=f13e5]:
+    - generic [ref=f13e6]: 💰
+    - heading "我的账本" [level=4] [ref=f13e7]
+    - paragraph [ref=f13e8]: 创建账号,开启理性消费之旅
+  - generic [ref=f13e9]:
+    - generic [ref=f13e10]:
+      - generic [ref=f13e11]:
+        - generic [ref=f13e12]: 用户名
+        - textbox "3-20 个字符" [ref=f13e13]
+      - generic [ref=f13e14]:
+        - generic [ref=f13e15]: 密码
+        - textbox "至少 6 位" [ref=f13e16]
+      - button "注 册" [ref=f13e20] [cursor=pointer]
+    - link "← 已有账号?去登录" [active] [ref=f13e21] [cursor=pointer]:
+      - /url: "#"

@@ -147,6 +147,30 @@ def set_profile():
     return ok({"gender": gender, "birthday": birthday.isoformat() if birthday else None, "avatar": avatar})
 
 
+@app.route("/api/profile", methods=["DELETE"])
+def delete_account():
+    """注销账号:验证密码后删除用户及其全部数据,不可恢复"""
+    data = request.get_json() or {}
+    password = data.get("password") or ""
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT password_hash FROM users WHERE id=%s", (g.user_id,))
+            user = c.fetchone()
+            if not user or not check_password_hash(user["password_hash"], password):
+                return jsonify(error="密码错误,无法注销"), 400
+            # 删除该用户的所有关联数据
+            c.execute("DELETE FROM mood_notes WHERE user_id=%s", (g.user_id,))
+            c.execute("DELETE FROM practice_logs WHERE user_id=%s", (g.user_id,))
+            c.execute("DELETE FROM budgets WHERE user_id=%s", (g.user_id,))
+            c.execute("DELETE FROM records WHERE user_id=%s", (g.user_id,))
+            c.execute("DELETE FROM users WHERE id=%s", (g.user_id,))
+        conn.commit()
+    finally:
+        conn.close()
+    return ok({"deleted": True})
+
+
 @app.route("/api/records", methods=["GET"])
 def list_records():
     month = request.args.get("month")
