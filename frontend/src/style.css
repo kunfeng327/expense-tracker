@@ -491,6 +491,13 @@ body {
   -webkit-text-fill-color: transparent;
 }
 .jp-kana-sm { font-size: 1.5rem; }
+/* 主文字行固定高度:五十音(2.8rem)和单词(1.7rem)切换时高度一致不跳动 */
+.jp-main { min-height: 50px; }
+.jp-swap { animation: jp-fade .25s ease-out; }
+@keyframes jp-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 /* 日语卡揭晓区:固定占位,揭晓前后假名/单词位置不变 */
 .jp-slot {
   min-height: 58px; margin-top: 6px;

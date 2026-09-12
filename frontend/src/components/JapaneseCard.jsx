@@ -80,7 +80,7 @@ export default function JapaneseCard() {
         <div className="flex-grow-1 min-w-0">
           {mode === 'kana' ? (
             <>
-              <div className="d-flex align-items-baseline gap-2 flex-wrap">
+              <div className="d-flex align-items-baseline gap-2 flex-wrap jp-main jp-swap" key="kana">
                 <span className="fw-bold jp-kana">{kana[0]}</span>
                 <span className="text-muted jp-kana-sm">{kana[1]}</span>
               </div>
@@ -95,7 +95,7 @@ export default function JapaneseCard() {
             </>
           ) : (
             <>
-              <div className="d-flex align-items-baseline gap-2 flex-wrap">
+              <div className="d-flex align-items-baseline gap-2 flex-wrap jp-main jp-swap" key="word">
                 <span className="fw-bold jp-word">{word[0]}</span>
                 <span className="small text-muted amount">{word[1]}</span>
               </div>
