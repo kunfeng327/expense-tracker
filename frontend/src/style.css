@@ -175,6 +175,15 @@ body {
 
 /* ---------- 弹窗 ---------- */
 .modal-shell { background: rgba(30, 41, 59, .45); backdrop-filter: blur(3px); }
+/* 弹窗始终水平+垂直居中(d-block 会破坏 modal-dialog-centered) */
+.modal-shell { display: flex !important; align-items: center; justify-content: center; padding: 16px; }
+.modal-shell .modal-dialog {
+  margin: 0;
+  width: min(500px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+}
+.modal-shell .modal-content { max-height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.modal-shell .modal-body { overflow-y: auto; }
 .modal-shell .modal-content {
   border: none; border-radius: 22px; box-shadow: var(--shadow-lg);
 }
@@ -285,11 +294,11 @@ body {
 .art-card .dog-img-wrap { background: rgba(15,23,42,.04); }
 .art-title { overflow-wrap: anywhere; }
 .art-caption { line-height: 1.5; }
-/* 名画简介:两行省略,点击弹出完整简介(浮层,卡片大小不变) */
+/* 名画简介:只显示一行省略,点击在卡片内浮层看全文,卡片大小永远不变 */
 .art-intro {
   margin-top: 4px; font-size: .78rem; color: var(--muted);
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
-  overflow: hidden; text-overflow: ellipsis;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   cursor: pointer; transition: color .15s ease;
 }
 .art-intro:hover { color: var(--primary-deep); }
@@ -599,7 +608,8 @@ body {
   from { transform: scale(.7); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
-.stagger > * { animation: fade-up .45s ease-out both; }
+/* backwards:动画结束后不留 transform,否则 fixed 弹窗会相对卡片而非屏幕定位 */
+.stagger > * { animation: fade-up .45s ease-out backwards; }
 .stagger > *:nth-child(1) { animation-delay: .02s; }
 .stagger > *:nth-child(2) { animation-delay: .08s; }
 .stagger > *:nth-child(3) { animation-delay: .14s; }
@@ -609,7 +619,7 @@ body {
 
 /* 列表项逐条滑入 */
 .record-item {
-  animation: fade-up .35s ease-out both;
+  animation: fade-up .35s ease-out backwards;
   animation-delay: calc(var(--i, 0) * 45ms);
 }
 
