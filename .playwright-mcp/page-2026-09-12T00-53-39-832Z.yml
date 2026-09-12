@@ -1,0 +1,91 @@
+- generic [ref=f7e3]:
+  - navigation [ref=f7e4]:
+    - generic [ref=f7e5]:
+      - generic [ref=f7e6]: ✦ 我的账本
+      - generic [ref=f7e7]:
+        - link "👤" [ref=f7e8] [cursor=pointer]:
+          - /url: "#/profile"
+        - generic [ref=f7e10]: pwtest
+        - link "退出" [ref=f7e11] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=f7e15]:
+    - generic [ref=f7e18] [cursor=pointer]:
+      - generic [ref=f7e20]:
+        - generic [ref=f7e21]: 🌤️
+        - generic [ref=f7e22]: 今日天气
+        - generic [ref=f7e23]: 🔄 点击翻面查看
+      - generic [ref=f7e24]: 正在仰望天空… 🔭
+    - generic [ref=f7e28]:
+      - generic [ref=f7e29]:
+        - generic [ref=f7e30]: 📚 今日单词
+        - button "换一个" [ref=f7e31] [cursor=pointer]
+      - generic [ref=f7e32]:
+        - generic [ref=f7e33]:
+          - generic [ref=f7e34]: precede
+          - button "🔊" [ref=f7e35] [cursor=pointer]
+        - generic [ref=f7e36]: /prɪˈsiːd/
+        - button "👀 想想意思,点击揭晓" [ref=f7e37] [cursor=pointer]
+    - generic [ref=f7e40] [cursor=pointer]:
+      - generic [ref=f7e42]:
+        - generic [ref=f7e43]: 🎲
+        - generic [ref=f7e44]: 今日偶遇
+        - generic [ref=f7e45]: 🔄 点击翻面看看是谁
+      - generic [ref=f7e47]:
+        - generic [ref=f7e48]:
+          - generic [ref=f7e49]: 🎲 今日偶遇
+          - button "换一只" [ref=f7e50]
+        - generic [ref=f7e51]:
+          - generic [ref=f7e52]: 🌿
+          - generic [ref=f7e53]: 草丛空空如也,网络好像不太顺畅
+          - button "再找一次" [ref=f7e54]
+    - generic [ref=f7e56]:
+      - generic [ref=f7e57]:
+        - generic [ref=f7e58]: 📔 随想笔记本
+        - button "✍️ 写一笔" [ref=f7e59] [cursor=pointer]
+      - generic [ref=f7e60] [cursor=pointer]:
+        - generic [ref=f7e61]: 💭
+        - generic [ref=f7e62]: 今天心情怎么样?点这里写下来…
+    - generic [ref=f7e64]:
+      - generic [ref=f7e65]:
+        - generic [ref=f7e66]: 🇯🇵 日语打卡
+        - generic [ref=f7e67]:
+          - button "五十音" [ref=f7e68] [cursor=pointer]
+          - button "单词" [ref=f7e69] [cursor=pointer]
+      - generic [ref=f7e70]:
+        - button "摸摸小鸟" [ref=f7e71] [cursor=pointer]
+        - generic [ref=f7e86]:
+          - generic [ref=f7e87]:
+            - generic [ref=f7e88]: び
+            - generic [ref=f7e89]: ビ
+          - button "👀 猜猜罗马音,点击揭晓" [ref=f7e91] [cursor=pointer]
+      - button "换一个" [ref=f7e92] [cursor=pointer]
+    - generic [ref=f7e94]:
+      - generic [ref=f7e95]:
+        - generic [ref=f7e96]: 🎧 每日听力
+        - button "换一句" [ref=f7e97] [cursor=pointer]
+      - generic [ref=f7e98]:
+        - button "🔊" [ref=f7e100] [cursor=pointer]
+        - button "👂 听听看,点击揭晓原文和中文" [ref=f7e102] [cursor=pointer]
+    - generic [ref=f7e104]:
+      - generic [ref=f7e105]:
+        - generic [ref=f7e106]: 🖼️ 今日名画
+        - button "换一幅" [ref=f7e107] [cursor=pointer]
+      - generic "点击换一幅" [ref=f7e108] [cursor=pointer]:
+        - img "The Last Supper" [ref=f7e110]
+        - generic [ref=f7e111]:
+          - generic [ref=f7e112]: The Last Supper
+          - generic [ref=f7e113]: Bernard van Orley (ca. 1525–28)
+          - generic "点击查看完整简介" [ref=f7e114]: The Last Supper is the final meal that, in the Gospel accounts, Jesus shared with his apostles in Jerusalem before his crucifixion. The Last Supper is commemorated by Christians especially on Holy Thursday. The Last Supper provides the scriptural basis for the Eucharist, also known as "Holy Communion" or "The Lord's Supper". Jesus having a final meal with his disciples is almost beyond dispute among scholars, and belongs to the framework of the narrative of Jesus' life.
+  - generic [ref=f7e115]:
+    - link "📒 记账" [ref=f7e116] [cursor=pointer]:
+      - /url: "#/"
+      - generic [ref=f7e117]: 📒
+      - text: 记账
+    - link "📊 统计" [ref=f7e118] [cursor=pointer]:
+      - /url: "#/stats"
+      - generic [ref=f7e119]: 📊
+      - text: 统计
+    - link "🎸 练习" [ref=f7e120] [cursor=pointer]:
+      - /url: "#/practice"
+      - generic [ref=f7e121]: 🎸
+      - text: 练习

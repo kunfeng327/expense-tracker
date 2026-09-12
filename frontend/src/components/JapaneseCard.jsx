@@ -84,11 +84,14 @@ export default function JapaneseCard() {
                 <span className="fw-bold jp-kana">{kana[0]}</span>
                 <span className="text-muted jp-kana-sm">{kana[1]}</span>
               </div>
-              {revealed
-                ? <div className="word-meaning mt-2" onClick={() => setRevealed(false)}>{kana[2]}</div>
-                : <button type="button" className="word-reveal-btn" onClick={() => { setRevealed(true); pat() }}>
-                    👀 猜猜罗马音,点击揭晓
-                  </button>}
+              {/* 揭晓区固定高度,揭晓前后假名位置不动 */}
+              <div className="jp-slot">
+                {revealed
+                  ? <div className="word-meaning" onClick={() => setRevealed(false)}>{kana[2]}</div>
+                  : <button type="button" className="word-reveal-btn" onClick={() => { setRevealed(true); pat() }}>
+                      👀 猜猜罗马音,点击揭晓
+                    </button>}
+              </div>
             </>
           ) : (
             <>
@@ -96,11 +99,13 @@ export default function JapaneseCard() {
                 <span className="fw-bold jp-word">{word[0]}</span>
                 <span className="small text-muted amount">{word[1]}</span>
               </div>
-              {revealed
-                ? <div className="word-meaning mt-2" onClick={() => setRevealed(false)}>{word[2]}</div>
-                : <button type="button" className="word-reveal-btn" onClick={() => { setRevealed(true); pat() }}>
-                    👀 猜猜意思,点击揭晓
-                  </button>}
+              <div className="jp-slot">
+                {revealed
+                  ? <div className="word-meaning" onClick={() => setRevealed(false)}>{word[2]}</div>
+                  : <button type="button" className="word-reveal-btn" onClick={() => { setRevealed(true); pat() }}>
+                      👀 猜猜意思,点击揭晓
+                    </button>}
+              </div>
             </>
           )}
         </div>

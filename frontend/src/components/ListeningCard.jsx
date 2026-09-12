@@ -66,26 +66,31 @@ export default function ListeningCard() {
       </div>
 
       <div className="word-body" key={en}>
-        {revealed ? (
-          <>
+        {/* 句子区:固定高度,揭晓前后位置不变;未揭晓时放播放按钮 */}
+        <div className="listening-zone">
+          {revealed ? (
             <div className="d-flex align-items-start justify-content-center gap-2">
               <span className={`listening-text ${long ? 'long' : ''}`} title={en}>{en}</span>
               <button type="button" className={`word-speak-btn mt-1 ${playing ? 'playing' : ''}`}
                       title="再听一遍" onClick={play}>🔊</button>
             </div>
+          ) : (
+            <button type="button" className={`word-speak-btn listening-big-play ${playing ? 'playing' : ''}`}
+                    title="听朗读" onClick={play}>🔊</button>
+          )}
+        </div>
+        {/* 底部区:固定高度,揭晓按钮和中文释义在同一位置互换 */}
+        <div className="listening-bottom">
+          {revealed ? (
             <div className="word-meaning" onClick={() => setRevealed(false)} title="点击收起,重新听">
               {zh}
             </div>
-          </>
-        ) : (
-          <div className="d-flex flex-column align-items-center justify-content-center flex-grow-1">
-            <button type="button" className={`word-speak-btn listening-big-play ${playing ? 'playing' : ''}`}
-                    title="听朗读" onClick={play}>🔊</button>
+          ) : (
             <button type="button" className="word-reveal-btn" onClick={() => { setRevealed(true); play() }}>
               👂 听听看,点击揭晓原文和中文
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   )

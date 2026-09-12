@@ -280,22 +280,55 @@ body {
 }
 .dog-body:hover .dog-img { transform: scale(1.05); }
 /* 名画卡:整行展示,画作大幅呈现,标题完整换行不截断 */
-.art-card { height: 460px; }
+.art-card { height: 500px; }
 .art-card .dog-img { object-fit: contain; }
 .art-card .dog-img-wrap { background: rgba(15,23,42,.04); }
 .art-title { overflow-wrap: anywhere; }
 .art-caption { line-height: 1.5; }
+/* 名画简介:两行省略,点击弹出完整简介(浮层,卡片大小不变) */
+.art-intro {
+  margin-top: 4px; font-size: .78rem; color: var(--muted);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden; text-overflow: ellipsis;
+  cursor: pointer; transition: color .15s ease;
+}
+.art-intro:hover { color: var(--primary-deep); }
+/* 简介浮层:铺在卡片内部,画作和卡片大小不变 */
+.art-card { position: relative; }
+.art-overlay {
+  position: absolute; inset: 0; z-index: 5;
+  border-radius: var(--radius, 16px);
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(6px);
+  padding: 16px 18px;
+  display: flex; flex-direction: column;
+  animation: poke-pop .25s ease-out;
+}
+.art-overlay-text { line-height: 1.8; overflow-y: auto; color: #475569; }
 /* 听力卡初始态的大播放按钮 */
 .listening-big-play {
   width: 56px; height: 56px; font-size: 24px;
   animation: weather-float 3s ease-in-out infinite;
 }
+/* 听力卡:句子区和底部区固定高度,揭晓前后文字位置不变 */
+.listening-zone {
+  min-height: 96px;
+  display: flex; align-items: center; justify-content: center;
+}
+.listening-bottom { min-height: 56px; display: flex; align-items: center; justify-content: center; }
+.listening-bottom .word-reveal-btn, .listening-bottom .word-meaning { margin: 0; }
+.listening-bottom .word-meaning {
+  max-width: 100%; text-align: center; font-size: .82rem;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
+}
 
 /* ---------- 单词卡片 ---------- */
 .word-card { overflow: hidden; height: 215px; display: flex; flex-direction: column; justify-content: center; }
 .word-body { animation: poke-pop .35s ease-out; }
-/* 听力卡:高度跟随同行卡片拉伸对齐,不再固定 215px */
-.listening-card { overflow: hidden; height: 100%; min-height: 215px; display: flex; flex-direction: column; justify-content: center; }
+/* 听力卡:高度跟随同行卡片拉伸对齐,标题固定在顶部,正文垂直居中 */
+.listening-card { overflow: hidden; height: 100%; min-height: 215px; display: flex; flex-direction: column; }
+.listening-card .word-body { margin: auto 0; }
 /* 听力卡句子:比单词长,字号小一些,靠左便于阅读 */
 .listening-text {
   font-family: "Inter", "Times New Roman", serif;
@@ -421,7 +454,7 @@ body {
   height: 250px;
   display: flex; flex-direction: column;
   overflow: hidden;
-  padding: 18px 18px 14px !important;
+  padding: 13px 18px 14px !important;
   gap: 6px;
 }
 .jp-card > .d-flex { flex: 1; align-items: center; min-height: 0; gap: 18px !important; }
@@ -460,6 +493,13 @@ body {
   -webkit-text-fill-color: transparent;
 }
 .jp-kana-sm { font-size: 1.5rem; }
+/* 日语卡揭晓区:固定占位,揭晓前后假名/单词位置不变 */
+.jp-slot {
+  min-height: 58px; margin-top: 6px;
+  display: flex; align-items: center; justify-content: flex-start;
+}
+.jp-slot .word-reveal-btn, .jp-slot .word-meaning { margin: 0; }
+.jp-slot .word-meaning { font-size: .82rem; }
 .jp-word { font-size: 1.7rem; color: #2e7d32; }
 .jp-speak { background: linear-gradient(120deg, #58cc02, #2e7d32); }
 .jp-roll { color: #2e7d32; border-color: rgba(88,204,2,.5); }
