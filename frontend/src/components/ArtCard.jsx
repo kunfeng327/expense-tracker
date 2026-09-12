@@ -12,16 +12,46 @@ const loadCached = () => {
   return null
 }
 
-// 用画名查维基百科摘要当简介,查不到就用馆藏信息兜底
-const fetchIntro = async d => {
+// 优先取中文维基百科摘要;没有中文条目就用 MyMemory 免费翻译;都失败用馆藏信息兜底
+const wikiSummary = async (lang, title) => {
   try {
-    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(d.title)}`)
+    const res = await fetch(`https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`)
     if (res.ok) {
       const w = await res.json()
       if (w.extract) return w.extract
     }
   } catch {}
-  return [d.medium, d.period || d.culture, d.objectDate].filter(Boolean).join(' · ') || '馆藏精选画作'
+  return null
+}
+
+const translateZh = async text => {
+  try {
+    const q = text.slice(0, 450) // MyMemory 单次限 500 字符
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(q)}&langpair=en|zh-CN`)
+    if (res.ok) {
+      const t = await res.json()
+      const out = t?.responseData?.translatedText
+      // 翻译失败时服务会原样返回英文,校验一下确实译成了中文
+      if (out && /[\u4e00-\u9fff]/.test(out)) return out
+    }
+  } catch {}
+  return null
+}
+
+const fetchIntro = async d => {
+  const title = d.title || ''
+  const zh = await wikiSummary('zh', title)
+  if (zh) return zh
+  const en = await wikiSummary('en', title)
+  if (en) {
+    const t = await translateZh(en)
+    if (t) return t
+    return en
+  }
+  // 没有百科条目:把馆藏信息(材质/文化/年代)也翻成中文
+  const meta = [d.medium, d.period || d.culture, d.objectDate].filter(Boolean).join(' · ')
+  if (meta) return (await translateZh(meta)) || meta
+  return '馆藏精选画作'
 }
 
 // 🖼️ 今日名画:大都会博物馆 API(免费无 key),精选馆藏每天一幅
@@ -30,6 +60,7 @@ export default function ArtCard() {
   const [loading, setLoading] = useState(false)
   const [failed, setFailed] = useState(false)
   const [showIntro, setShowIntro] = useState(false)
+  const [introPending, setIntroPending] = useState(false)
   const fetching = useRef(false)
 
   const fetchArt = async () => {
@@ -56,12 +87,13 @@ export default function ArtCard() {
           }
           setArt(item)
           localStorage.setItem(CACHE_KEY, JSON.stringify(item))
-          // 简介异步补上,不阻塞图片展示
+          // 简介异步补上,不阻塞图片展示;占位文案避免卡片高度跳动
+          setIntroPending(true)
           fetchIntro(d).then(intro => {
             item.intro = intro
             setArt({ ...item })
             localStorage.setItem(CACHE_KEY, JSON.stringify(item))
-          })
+          }).finally(() => setIntroPending(false))
           return
         }
       }
@@ -100,10 +132,14 @@ export default function ArtCard() {
             <div className="small text-muted text-center mt-2 art-caption">
               <div className="fw-semibold art-title">{art.title}</div>
               <div className="amount">{art.artist}{art.year ? ` (${art.year})` : ''}</div>
-              {art.intro && (
+              {art.intro ? (
                 <div className="art-intro"
                      title="点击查看完整简介"
                      onClick={e => { e.stopPropagation(); setShowIntro(true) }}>{art.intro}</div>
+              ) : (
+                <div className="art-intro art-intro-placeholder">
+                  {introPending ? '⏳ 正在获取简介…' : '暂无简介'}
+                </div>
               )}
             </div>
           </>

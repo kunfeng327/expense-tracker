@@ -293,6 +293,8 @@ body {
   cursor: pointer; transition: color .15s ease;
 }
 .art-intro:hover { color: var(--primary-deep); }
+.art-intro-placeholder { cursor: default; font-style: italic; opacity: .75; }
+.art-intro-placeholder:hover { color: var(--muted); }
 /* 简介浮层:铺在卡片内部,画作和卡片大小不变 */
 .art-card { position: relative; }
 .art-overlay {
@@ -339,13 +341,9 @@ body {
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-/* 长难句:进一步缩小字号并限制三行,卡片高度与同行卡片保持一致 */
+/* 长难句:缩小字号,完整换行显示不截断,卡片随内容自动长高 */
 .listening-text.long {
   font-size: clamp(.8rem, 2.9vw, .95rem); line-height: 1.5;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
 }
 /* 听力卡初始态的大播放按钮 */
 .word-text {
