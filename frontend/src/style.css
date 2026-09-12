@@ -347,8 +347,14 @@ body {
 }
 
 /* ---------- 单词卡片 ---------- */
-.word-card { overflow: hidden; height: 215px; display: flex; flex-direction: column; justify-content: center; }
-.word-body { animation: poke-pop .35s ease-out; }
+.word-card { overflow: hidden; height: 215px; display: flex; flex-direction: column; }
+.word-card .word-body { margin: auto 0; animation: poke-pop .35s ease-out; }
+/* 单词行和揭晓区固定占位:换词/揭晓时高度不跳 */
+.word-line { min-height: 40px; }
+.word-slot { min-height: 54px; display: flex; align-items: center; justify-content: center; }
+.word-slot .word-reveal-btn, .word-slot .word-meaning { margin: 0; }
+.word-slot .word-meaning { font-size: .82rem; max-width: 100%; text-align: center;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 /* 听力卡:高度跟随同行卡片拉伸对齐,标题固定在顶部,正文垂直居中 */
 .listening-card { overflow: hidden; height: 100%; min-height: 215px; display: flex; flex-direction: column; }
 .listening-card .word-body { margin: auto 0; }
@@ -476,7 +482,10 @@ body {
   padding: 13px 18px 14px !important;
   gap: 6px;
 }
-.jp-card > .d-flex { flex: 1; align-items: center; min-height: 0; gap: 18px !important; }
+/* 只作用于中间内容行(选择器别用 .d-flex,会误伤标题行) */
+.jp-card > .jp-mid { flex: 1; align-items: center; min-height: 0; gap: 18px !important; }
+/* flex 子项允许收缩(Bootstrap 没有这个工具类) */
+.min-w-0 { min-width: 0 !important; }
 .jp-bird-btn { border: none; background: none; padding: 0; cursor: pointer; line-height: 0; }
 .jp-bird { animation: bird-bob 2.2s ease-in-out infinite; }
 .jp-bird .jp-wing { transform-box: fill-box; transform-origin: center; animation: bird-wing 2.2s ease-in-out infinite; }
@@ -525,6 +534,8 @@ body {
   display: flex; align-items: center; justify-content: flex-start;
 }
 .jp-slot .word-reveal-btn, .jp-slot .word-meaning { margin: 0; }
+/* 窄屏防挤压:揭晓按钮占满整行正常换行,不会一个字一行 */
+.jp-slot .word-reveal-btn { width: 100%; padding: 5px 10px; font-size: .74rem; line-height: 1.5; white-space: normal; text-align: center; box-sizing: border-box; }
 .jp-slot .word-meaning { font-size: .82rem; }
 .jp-word { font-size: 1.7rem; color: #2e7d32; }
 .jp-speak { background: linear-gradient(120deg, #58cc02, #2e7d32); }

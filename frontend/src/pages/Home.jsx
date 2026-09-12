@@ -13,12 +13,12 @@ export default function Home() {
     <div className="stagger d-flex flex-column">
       {/* 天气 / 单词 / 宝可梦 / 随想 / 日语 / 听力 / 名画:卡片墙 */}
       <div className="row g-2 align-items-stretch">
-        <div className="col-6 d-flex"><WeatherCard /></div>
-        <div className="col-6 d-flex"><WordCard /></div>
-        <div className="col-6 d-flex"><PokemonCard /></div>
-        <div className="col-6 d-flex"><NoteCard /></div>
-        <div className="col-6 d-flex"><JapaneseCard /></div>
-        <div className="col-6 d-flex"><ListeningCard /></div>
+        <div className="col-12 col-sm-6 d-flex"><WeatherCard /></div>
+        <div className="col-12 col-sm-6 d-flex"><WordCard /></div>
+        <div className="col-12 col-sm-6 d-flex"><PokemonCard /></div>
+        <div className="col-12 col-sm-6 d-flex"><NoteCard /></div>
+        <div className="col-12 col-sm-6 d-flex"><JapaneseCard /></div>
+        <div className="col-12 col-sm-6 d-flex"><ListeningCard /></div>
         <div className="col-12 d-flex"><ArtCard /></div>
       </div>
     </div>

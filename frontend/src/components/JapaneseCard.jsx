@@ -71,7 +71,7 @@ export default function JapaneseCard() {
         </div>
       </div>
 
-      <div className="d-flex align-items-center gap-3">
+      <div className="d-flex align-items-center gap-3 jp-mid">
         {/* 小绿鸟:点一下会开心地跳 */}
         <button type="button" className="jp-bird-btn" title="摸摸小鸟" onClick={pat}>
           <GreenBird excited={excited} />

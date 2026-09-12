@@ -41,22 +41,25 @@ export default function WordCard() {
       </div>
 
       <div className="word-body" key={entry[0]}>
-        <div className="d-flex align-items-center justify-content-center gap-2">
+        <div className="d-flex align-items-center justify-content-center gap-2 word-line">
           <span className="fw-bold word-text">{entry[0]}</span>
           <button type="button" className={`word-speak-btn ${playing ? 'playing' : ''}`}
                   title="听发音" onClick={play}>🔊</button>
         </div>
         <div className="text-center text-muted small mt-1 amount">{entry[1]}</div>
 
-        {revealed ? (
-          <div className="word-meaning" onClick={() => setRevealed(false)} title="点击收起">
-            {entry[2]}
-          </div>
-        ) : (
-          <button type="button" className="word-reveal-btn" onClick={() => { setRevealed(true); play() }}>
-            👀 想想意思,点击揭晓
-          </button>
-        )}
+        {/* 揭晓区固定占位,揭晓/换词时文字位置不动 */}
+        <div className="word-slot">
+          {revealed ? (
+            <div className="word-meaning" onClick={() => setRevealed(false)} title="点击收起">
+              {entry[2]}
+            </div>
+          ) : (
+            <button type="button" className="word-reveal-btn" onClick={() => { setRevealed(true); play() }}>
+              👀 想想意思,点击揭晓
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

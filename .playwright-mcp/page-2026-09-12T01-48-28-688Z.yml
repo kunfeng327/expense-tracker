@@ -1,0 +1,91 @@
+- generic [ref=f7e3]:
+  - navigation [ref=f7e4]:
+    - generic [ref=f7e5]:
+      - generic [ref=f7e6]: ✦ 我的账本
+      - generic [ref=f7e7]:
+        - link "👤" [ref=f7e8] [cursor=pointer]:
+          - /url: "#/profile"
+        - link "退出" [ref=f7e10] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=f7e14]:
+    - generic [ref=f7e17] [cursor=pointer]:
+      - generic [ref=f7e19]:
+        - generic [ref=f7e20]: 🌤️
+        - generic [ref=f7e21]: 今日天气
+        - generic [ref=f7e22]: 🔄 点击翻面查看
+      - generic [ref=f7e23]: 正在仰望天空… 🔭
+    - generic [ref=f7e27]:
+      - generic [ref=f7e28]:
+        - generic [ref=f7e29]: 📚 今日单词
+        - button "换一个" [ref=f7e30] [cursor=pointer]
+      - generic [ref=f7e31]:
+        - generic [ref=f7e32]:
+          - generic [ref=f7e33]: stimulate
+          - button "🔊" [ref=f7e34] [cursor=pointer]
+        - generic [ref=f7e35]: /ˈstɪmjuleɪt/
+        - button "👀 想想意思,点击揭晓" [ref=f7e37] [cursor=pointer]
+    - generic [ref=f7e40] [cursor=pointer]:
+      - generic [ref=f7e42]:
+        - generic [ref=f7e43]: 🎲
+        - generic [ref=f7e44]: 今日偶遇
+        - generic [ref=f7e45]: 🔄 点击翻面看看是谁
+      - generic [ref=f7e47]:
+        - generic [ref=f7e48]:
+          - generic [ref=f7e49]: 🎲 今日偶遇
+          - button "换一只" [ref=f7e50]
+        - generic [ref=f7e51]:
+          - generic [ref=f7e52]: 🌿
+          - generic [ref=f7e53]: 草丛空空如也,网络好像不太顺畅
+          - button "再找一次" [ref=f7e54]
+    - generic [ref=f7e56]:
+      - generic [ref=f7e57]:
+        - generic [ref=f7e58]: 📔 随想笔记本
+        - button "✍️ 写一笔" [ref=f7e59] [cursor=pointer]
+      - generic [ref=f7e60] [cursor=pointer]:
+        - generic [ref=f7e61]: 💭
+        - generic [ref=f7e62]: 今天心情怎么样?点这里写下来…
+    - generic [ref=f7e64]:
+      - generic [ref=f7e65]:
+        - generic [ref=f7e66]: 🇯🇵 日语打卡
+        - generic [ref=f7e67]:
+          - button "五十音" [ref=f7e68] [cursor=pointer]
+          - button "单词" [ref=f7e69] [cursor=pointer]
+      - generic [ref=f7e70]:
+        - button "摸摸小鸟" [ref=f7e71] [cursor=pointer]
+        - generic [ref=f7e86]:
+          - generic [ref=f7e87]:
+            - generic [ref=f7e88]: ご
+            - generic [ref=f7e89]: ゴ
+          - button "👀 猜猜罗马音,点击揭晓" [ref=f7e91] [cursor=pointer]
+      - button "换一个" [ref=f7e92] [cursor=pointer]
+    - generic [ref=f7e94]:
+      - generic [ref=f7e95]:
+        - generic [ref=f7e96]: 🎧 每日听力
+        - button "换一句" [ref=f7e97] [cursor=pointer]
+      - generic [ref=f7e98]:
+        - button "🔊" [ref=f7e100] [cursor=pointer]
+        - button "👂 听听看,点击揭晓原文和中文" [ref=f7e102] [cursor=pointer]
+    - generic [ref=f7e104]:
+      - generic [ref=f7e105]:
+        - generic [ref=f7e106]: 🖼️ 今日名画
+        - button "换一幅" [ref=f7e107] [cursor=pointer]
+      - generic "点击换一幅" [ref=f7e108] [cursor=pointer]:
+        - generic [ref=f7e109]:
+          - img "Seated Bishop" [ref=f7e111]
+          - generic [ref=f7e112]:
+            - generic [ref=f7e113]: Seated Bishop
+            - generic [ref=f7e114]: Tilman Riemenschneider (ca. 1495)
+            - generic "点击查看完整简介" [ref=f7e115]: 坐着的主教是蒂尔曼·里门施奈德（ Tilman Riemenschneider ）雕刻的林登伍德雕像。它于1495年在哥特式晚期和文艺复兴时期的过渡时期完成，目前收藏于大都会艺术博物馆，作为修道院收藏的一部分。
+  - generic [ref=f7e116]:
+    - link "📒 记账" [ref=f7e117] [cursor=pointer]:
+      - /url: "#/"
+      - generic [ref=f7e118]: 📒
+      - text: 记账
+    - link "📊 统计" [ref=f7e119] [cursor=pointer]:
+      - /url: "#/stats"
+      - generic [ref=f7e120]: 📊
+      - text: 统计
+    - link "🎸 练习" [ref=f7e121] [cursor=pointer]:
+      - /url: "#/practice"
+      - generic [ref=f7e122]: 🎸
+      - text: 练习
