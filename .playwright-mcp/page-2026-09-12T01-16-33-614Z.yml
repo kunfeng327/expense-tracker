@@ -1,0 +1,97 @@
+- generic [ref=f3e3]:
+  - navigation [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - generic [ref=f3e6]: ✦ 我的账本
+      - generic [ref=f3e7]:
+        - link "👤" [ref=f3e8] [cursor=pointer]:
+          - /url: "#/profile"
+        - generic [ref=f3e10]: pwtest
+        - link "退出" [ref=f3e11] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=f3e15]:
+    - generic [ref=f3e18] [cursor=pointer]:
+      - generic [ref=f3e20]:
+        - generic [ref=f3e21]: 🌤️
+        - generic [ref=f3e22]: 今日天气
+        - generic [ref=f3e23]: 🔄 点击翻面查看
+      - generic [ref=f3e24]: 正在仰望天空… 🔭
+    - generic [ref=f3e28]:
+      - generic [ref=f3e29]:
+        - generic [ref=f3e30]: 📚 今日单词
+        - button "换一个" [ref=f3e31] [cursor=pointer]
+      - generic [ref=f3e32]:
+        - generic [ref=f3e33]:
+          - generic [ref=f3e34]: implement
+          - button "🔊" [ref=f3e35] [cursor=pointer]
+        - generic [ref=f3e36]: /ˈɪmplɪment/
+        - button "👀 想想意思,点击揭晓" [ref=f3e37] [cursor=pointer]
+    - generic [ref=f3e40] [cursor=pointer]:
+      - generic [ref=f3e42]:
+        - generic [ref=f3e43]: 🎲
+        - generic [ref=f3e44]: 今日偶遇
+        - generic [ref=f3e45]: 🔄 点击翻面看看是谁
+      - generic [ref=f3e47]:
+        - generic [ref=f3e48]:
+          - generic [ref=f3e49]: 🎲 今日偶遇
+          - button "换一只" [ref=f3e50]
+        - generic [ref=f3e51]:
+          - generic [ref=f3e52]: 🌿
+          - generic [ref=f3e53]: 草丛空空如也,网络好像不太顺畅
+          - button "再找一次" [ref=f3e54]
+    - generic [ref=f3e56]:
+      - generic [ref=f3e57]:
+        - generic [ref=f3e58]: 📔 随想笔记本
+        - button "✍️ 写一笔" [ref=f3e59] [cursor=pointer]
+      - generic [ref=f3e60] [cursor=pointer]:
+        - generic [ref=f3e61]: 💭
+        - generic [ref=f3e62]: 今天心情怎么样?点这里写下来…
+    - generic [ref=f3e64]:
+      - generic [ref=f3e65]:
+        - generic [ref=f3e66]: 🇯🇵 日语打卡
+        - generic [ref=f3e67]:
+          - button "五十音" [ref=f3e68] [cursor=pointer]
+          - button "单词" [ref=f3e69] [cursor=pointer]
+      - generic [ref=f3e70]:
+        - button "摸摸小鸟" [ref=f3e71] [cursor=pointer]
+        - generic [ref=f3e86]:
+          - generic [ref=f3e87]:
+            - generic [ref=f3e88]: ぶ
+            - generic [ref=f3e89]: ブ
+          - button "👀 猜猜罗马音,点击揭晓" [ref=f3e91] [cursor=pointer]
+      - button "换一个" [ref=f3e92] [cursor=pointer]
+    - generic [ref=f3e94]:
+      - generic [ref=f3e95]:
+        - generic [ref=f3e96]: 🎧 每日听力
+        - button "换一句" [ref=f3e97] [cursor=pointer]
+      - generic [ref=f3e98]:
+        - button "🔊" [ref=f3e100] [cursor=pointer]
+        - button "👂 听听看,点击揭晓原文和中文" [ref=f3e102] [cursor=pointer]
+    - generic [ref=f3e104]:
+      - generic [ref=f3e105]:
+        - generic [ref=f3e106]: 🖼️ 今日名画
+        - button "换一幅" [ref=f3e107] [cursor=pointer]
+      - generic "点击换一幅" [ref=f3e108] [cursor=pointer]:
+        - img "Jar from the tomb of Sennedjem" [ref=f3e110]
+        - generic [ref=f3e111]:
+          - generic [ref=f3e112]: Jar from the tomb of Sennedjem
+          - generic [ref=f3e113]: 佚名 (ca. 1290–1224 BCE)
+          - generic "点击查看完整简介" [ref=f3e114]: 彩绘红陶·新王国，拉梅西德·约公元前1290–1224年
+      - generic [ref=f3e115]:
+        - generic [ref=f3e116]:
+          - generic [ref=f3e117]: Jar from the tomb of Sennedjem
+          - button "收起简介" [active] [ref=f3e118] [cursor=pointer]
+        - generic [ref=f3e119]: 佚名 (ca. 1290–1224 BCE)
+        - generic [ref=f3e120]: 彩绘红陶·新王国，拉梅西德·约公元前1290–1224年
+  - generic [ref=f3e121]:
+    - link "📒 记账" [ref=f3e122] [cursor=pointer]:
+      - /url: "#/"
+      - generic [ref=f3e123]: 📒
+      - text: 记账
+    - link "📊 统计" [ref=f3e124] [cursor=pointer]:
+      - /url: "#/stats"
+      - generic [ref=f3e125]: 📊
+      - text: 统计
+    - link "🎸 练习" [ref=f3e126] [cursor=pointer]:
+      - /url: "#/practice"
+      - generic [ref=f3e127]: 🎸
+      - text: 练习

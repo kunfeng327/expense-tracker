@@ -68,6 +68,8 @@ export default function ArtCard() {
     fetching.current = true
     setLoading(true)
     setFailed(false)
+    setShowIntro(false)
+    setArt(null) // 立即清掉上一幅,搜索中不留残影
     try {
       // 先搜"有图 + 精选"的藏品 id 池,再随机挑一个拿详情
       const sres = await fetch('https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&isHighlight=true&q=painting')
@@ -124,7 +126,7 @@ export default function ArtCard() {
             <div className="mt-2">画框空了,点击再看看</div>
           </div>
         ) : art ? (
-          <>
+          <div className="art-frame" key={art.img}>
             <div className="dog-img-wrap">
               <img src={art.img} alt={art.title} className="dog-img" />
             </div>
@@ -142,10 +144,11 @@ export default function ArtCard() {
                 </div>
               )}
             </div>
-          </>
+          </div>
         ) : (
-          <div className="d-flex align-items-center justify-content-center flex-grow-1 small text-muted">
-            {loading ? '正在打开画廊… 🎨' : <span style={{ fontSize: 40 }}>🎨</span>}
+          <div className="d-flex flex-column align-items-center justify-content-center flex-grow-1 small text-muted">
+            <span className="art-searching-emoji">🎨</span>
+            <div className="mt-2">{loading ? '正在画廊里寻找…' : '打开画廊看看'}</div>
           </div>
         )}
       </div>

@@ -295,6 +295,18 @@ body {
 .art-intro:hover { color: var(--primary-deep); }
 .art-intro-placeholder { cursor: default; font-style: italic; opacity: .75; }
 .art-intro-placeholder:hover { color: var(--muted); }
+/* 换画入场:像宝可梦翻牌一样灵动地弹入 */
+.art-frame {
+  display: flex; flex-direction: column; flex-grow: 1; min-height: 0;
+  animation: art-pop .45s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes art-pop {
+  0% { transform: scale(.55) rotate(-3deg); opacity: 0; }
+  60% { transform: scale(1.05) rotate(1deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+/* 搜索中的画板emoji:轻轻悬浮 */
+.art-searching-emoji { font-size: 40px; animation: weather-float 2.4s ease-in-out infinite; }
 /* 简介浮层:铺在卡片内部,画作和卡片大小不变 */
 .art-card { position: relative; }
 .art-overlay {
