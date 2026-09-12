@@ -94,6 +94,12 @@ export default function Stats() {
   const pct = budget.total > 0 ? Math.min(100, expense / budget.total * 100) : 0
   const remaining = budget.total - expense
 
+  const openAdd = () => {
+    setEditing(null)
+    setForm({ type: 'expense', amount: '', category_id: null, date: today(), note: '' })
+    setShowRecordModal(true)
+  }
+
   const openEdit = r => {
     setEditing(r)
     setForm({ type: r.type, amount: String(r.amount), category_id: r.category_id, date: r.date, note: r.note || '' })
@@ -217,18 +223,20 @@ export default function Stats() {
           <div className="empty-state">
             <span className="emoji">🪄</span>
             本月暂无记录<br />
-            <span className="small">去账本页点右下角 ＋ 记一笔吧</span>
+            <span className="small">点击右下角 ＋ 记一笔吧</span>
           </div>
         )}
       </div>
 
-      {/* 记录编辑弹窗 */}
+      <button className="fab" onClick={openAdd}>＋</button>
+
+      {/* 记录新增/编辑弹窗 */}
       {showRecordModal && (
         <div className="modal d-block modal-shell" tabIndex="-1" onClick={() => setShowRecordModal(false)}>
           <div className="modal-dialog modal-dialog-centered" onClick={e => e.stopPropagation()}>
             <div className="modal-content p-2">
               <div className="modal-header">
-                <h5 className="modal-title fw-bold">✏️ 编辑记录</h5>
+                <h5 className="modal-title fw-bold">{editing ? '✏️ 编辑记录' : '✨ 记一笔'}</h5>
                 <button className="btn-close" onClick={() => setShowRecordModal(false)} /></div>
               <div className="modal-body">
                 <div className="d-flex gap-2 mb-3">
