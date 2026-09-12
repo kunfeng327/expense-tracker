@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState, useCallback } from 'react'
 
 // WMO 天气代码 → 描述 / emoji / 配色 / 穿衣与带伞建议
 const WEATHER = {
@@ -48,10 +48,14 @@ const locate = () => new Promise(resolve =>
 
 // Open-Meteo 免费无 Key,展示今日天气 + 出门提醒
 export default function WeatherCard() {
-  const [data, setData] = useState(null)
+  const [data, setData] = useState(null) // null = 还没加载
+  const [flipped, setFlipped] = useState(false)
 
-  useEffect(() => {
-    (async () => {
+  // 不翻面就不请求,第一次翻面时才开始加载天气
+  const load = useCallback(() => {
+    if (data !== null) return
+    setData(undefined) // undefined = 加载中
+    ;(async () => {
       try {
         const { lat, lon } = await locate()
         const res = await fetch(
@@ -69,46 +73,64 @@ export default function WeatherCard() {
         })
       } catch { setData({ failed: true }) }
     })()
-  }, [])
+  }, [data])
+
+  const flip = () => { setFlipped(f => !f); load() }
 
   const w = data ? (WEATHER[data.code] || fallbackWeather) : fallbackWeather
   const cloth = data && !data.failed ? clothTip(data.temp) : ''
   const rainWarn = data && !data.failed && data.rain >= 50
 
   return (
-    <div className="card p-3 w-100 weather-card" style={{ background: w.bg }}>
-      {!data ? (
-        <div className="text-center py-3 small" style={{ color: 'rgba(255,255,255,.9)' }}>正在仰望天空… 🔭</div>
-      ) : (
-        <>
-          <div className="d-flex justify-content-between align-items-center mb-1">
-            <span className="small fw-semibold" style={{ color: 'rgba(255,255,255,.92)' }}>🌤️ 今日天气</span>
-            <span className="small amount" style={{ color: 'rgba(255,255,255,.92)' }}>
-              {data.failed ? '--' : `${data.min}° ~ ${data.max}°`}
-            </span>
+    <div className="flip-scene" onClick={flip}>
+      <div className={`flip-inner ${flipped ? 'flipped' : ''}`}>
+        <div className="flip-face front">
+          <div className="card p-3 w-100 h-100 weather-card weather-cover d-flex flex-column align-items-center justify-content-center"
+               style={{ background: 'linear-gradient(135deg,#60a5fa,#a5b4fc)' }}>
+            <span className="weather-emoji">🌤️</span>
+            <div className="small mt-2 fw-semibold" style={{ color: 'rgba(255,255,255,.92)' }}>今日天气</div>
+            <div className="small" style={{ color: 'rgba(255,255,255,.85)' }}>🔄 点击翻面查看</div>
           </div>
+        </div>
+        <div className="flip-face back">
+          <div className="card p-3 w-100 h-100 weather-card" style={{ background: w.bg }}>
+            {!data ? (
+              <div className="text-center py-3 small" style={{ color: 'rgba(255,255,255,.9)' }}>正在仰望天空… 🔭</div>
+            ) : data.failed ? (
+              <div className="text-center py-3 small" style={{ color: 'rgba(255,255,255,.9)' }}>{fallbackWeather.tip}</div>
+            ) : (
+              <>
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <span className="small fw-semibold" style={{ color: 'rgba(255,255,255,.92)' }}>🌤️ 今日天气</span>
+                  <span className="small amount" style={{ color: 'rgba(255,255,255,.92)' }}>
+                    {data.min}° ~ {data.max}°
+                  </span>
+                </div>
 
-          <div className="d-flex align-items-center gap-3">
-            <span className="weather-emoji">{w.emoji}</span>
-            <div className="flex-grow-1">
-              <div className="d-flex align-items-baseline gap-2">
-                <span className="fw-bold amount" style={{ fontSize: '2rem', color: '#fff' }}>
-                  {data.failed ? '--' : data.temp + '°'}
-                </span>
-                <span className="small" style={{ color: 'rgba(255,255,255,.92)' }}>{w.text}</span>
-              </div>
-              <div className="small mt-1" style={{ color: 'rgba(255,255,255,.95)' }}>{w.tip}</div>
-              {cloth && <div className="small mt-1" style={{ color: 'rgba(255,255,255,.95)' }}>{cloth}</div>}
-            </div>
+                <div className="d-flex align-items-center gap-3">
+                  <span className="weather-emoji">{w.emoji}</span>
+                  <div className="flex-grow-1">
+                    <div className="d-flex align-items-baseline gap-2">
+                      <span className="fw-bold amount" style={{ fontSize: '2rem', color: '#fff' }}>
+                        {data.temp + '°'}
+                      </span>
+                      <span className="small" style={{ color: 'rgba(255,255,255,.92)' }}>{w.text}</span>
+                    </div>
+                    <div className="small mt-1" style={{ color: 'rgba(255,255,255,.95)' }}>{w.tip}</div>
+                    {cloth && <div className="small mt-1" style={{ color: 'rgba(255,255,255,.95)' }}>{cloth}</div>}
+                  </div>
+                </div>
+
+                {rainWarn && (
+                  <div className="weather-rain-pill mt-2">
+                    ☔ 降雨概率 {data.rain}%,今天出门记得带伞!
+                  </div>
+                )}
+              </>
+            )}
           </div>
-
-          {rainWarn && (
-            <div className="weather-rain-pill mt-2">
-              ☔ 降雨概率 {data.rain}%,今天出门记得带伞!
-            </div>
-          )}
-        </>
-      )}
+        </div>
+      </div>
     </div>
   )
 }

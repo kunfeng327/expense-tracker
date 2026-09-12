@@ -88,6 +88,19 @@ def init_db():
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         """)
 
+        # 随想笔记:按用户存心情随想,替代浏览器 localStorage
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS mood_notes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                mood VARCHAR(16) NOT NULL DEFAULT '😊',
+                decor VARCHAR(128) DEFAULT '',
+                text VARCHAR(500) NOT NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_user_time (user_id, created_at)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+        """)
+
         # 旧表迁移:records / budgets 增加 user_id(已有数据归给第一个用户)
         _add_column_if_missing(c, "records", "user_id", "INT")
         _add_column_if_missing(c, "budgets", "user_id", "INT")

@@ -1,33 +1,60 @@
 import React, { useEffect, useState } from 'react'
-
-const STORAGE_KEY = 'mood-notes'
+import { api } from '../api'
 
 // 心情 emoji + 常用装饰 emoji
 const MOOD_EMOJIS = ['😊', '😔', '😠', '😭', '😱', '🥳', '😴', '🤔']
 const DECOR_EMOJIS = ['✨', '🌈', '🍀', '🌸', '☕', '🎵', '💪', '🔥', '⭐', '🌙', '❤️', '🎉']
 
-const loadNotes = () => {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [] } catch { return [] }
-}
-
-// 随想笔记本:随手记录心情,支持选心情/装饰 emoji,存在浏览器本地
+// 随想笔记本:随手记录心情,支持选心情/装饰 emoji,保存在服务端(按账号隔离)
 export default function NoteCard() {
-  const [notes, setNotes] = useState(loadNotes)
+  const [notes, setNotes] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [draft, setDraft] = useState({ mood: '😊', text: '', decor: [] })
+  const [viewId, setViewId] = useState(null)
+  const [saving, setSaving] = useState(false)
 
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)) }, [notes])
+  const load = () => {
+    api.listNotes().then(setNotes).catch(() => {}) // 拉取失败保持现状,不打断页面
+  }
+  useEffect(() => {
+    load()
+    // 一次性迁移:把旧版存在 localStorage 的随想上传到账号,成功后清掉本地
+    const migrate = async () => {
+      let local = []
+      try { local = JSON.parse(localStorage.getItem('mood-notes')) || [] } catch { local = [] }
+      if (!local.length) return
+      try {
+        for (const n of local.slice().reverse()) {
+          if (n && n.text) await api.addNote({ mood: n.mood || '😊', text: n.text, decor: n.decor || [] })
+        }
+        localStorage.removeItem('mood-notes')
+        load()
+      } catch { /* 迁移失败下次再试 */ }
+    }
+    migrate()
+  }, [])
 
   const openNew = () => { setDraft({ mood: '😊', text: '', decor: [] }); setShowModal(true) }
 
-  const save = () => {
+  const save = async () => {
     const text = draft.text.trim()
     if (!text) return alert('写点什么再保存吧~')
-    setNotes(n => [{ mood: draft.mood, text, decor: draft.decor, time: new Date().toISOString() }, ...n].slice(0, 50))
-    setShowModal(false)
+    if (text.length > 500) return alert('随想最多 500 字哦~')
+    setSaving(true)
+    try {
+      await api.addNote({ mood: draft.mood, text, decor: draft.decor })
+      setShowModal(false)
+      load()
+    } catch (e) {
+      alert('保存失败:' + e.message)
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const del = i => setNotes(n => n.filter((_, j) => j !== i))
+  const del = async id => {
+    try { await api.deleteNote(id); load() } catch (e) { alert('删除失败:' + e.message) }
+  }
 
   const toggleDecor = e =>
     setDraft(d => ({ ...d, decor: d.decor.includes(e) ? d.decor.filter(x => x !== e) : [...d.decor, e] }))
@@ -45,13 +72,17 @@ export default function NoteCard() {
         <button className="btn btn-sm btn-gradient rounded-pill px-3" onClick={openNew}>✍️ 写一笔</button>
       </div>
 
-      {latest ? (
-        <div className="note-preview" onClick={openNew} title="再写一笔">
-          <span className="note-mood">{latest.mood}</span>
-          <div className="flex-grow-1 min-w-0">
-            <div className="small text-truncate">{latest.text}</div>
-            <div className="small text-muted">{latest.decor.join(' ')} {timeLabel(latest.time)}</div>
-          </div>
+      {notes.length > 0 ? (
+        <div className="note-list">
+          {notes.slice(0, 3).map(n => (
+            <div key={n.id} className="note-preview" onClick={() => setViewId(n.id)} title="点击查看全文">
+              <span className="note-mood">{n.mood}</span>
+              <div className="flex-grow-1 min-w-0">
+                <div className="small note-text-clamp">{n.text}</div>
+                <div className="small text-muted note-time">{n.decor.join(' ')} {timeLabel(n.time)}</div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="note-preview note-empty" onClick={openNew}>
@@ -60,7 +91,7 @@ export default function NoteCard() {
         </div>
       )}
 
-      {notes.length > 1 && (
+      {notes.length > 3 && (
         <div className="small text-muted text-end mt-1">
           共 {notes.length} 条随想
         </div>
@@ -99,14 +130,14 @@ export default function NoteCard() {
                   <>
                     <label className="form-label small text-muted mt-2">历史随想</label>
                     <div className="note-history">
-                      {notes.map((n, i) => (
-                        <div key={i} className="note-history-item">
+                      {notes.map(n => (
+                        <div key={n.id} className="note-history-item" style={{ cursor: 'pointer' }} onClick={() => { setShowModal(false); setViewId(n.id) }}>
                           <span>{n.mood}</span>
                           <div className="flex-grow-1 min-w-0">
-                            <div className="small text-truncate">{n.text}</div>
+                            <div className="small note-text-clamp">{n.text}</div>
                             <div className="small text-muted" style={{ fontSize: '.7rem' }}>{timeLabel(n.time)}</div>
                           </div>
-                          <button className="btn btn-sm btn-light border-0 p-1 px-2" onClick={() => del(i)}>🗑️</button>
+                          <button className="btn btn-sm btn-light border-0 p-1 px-2" onClick={e => { e.stopPropagation(); del(n.id) }}>🗑️</button>
                         </div>
                       ))}
                     </div>
@@ -115,12 +146,39 @@ export default function NoteCard() {
               </div>
               <div className="modal-footer px-3 pb-3">
                 <button className="btn btn-light rounded-3 px-4" onClick={() => setShowModal(false)}>取消</button>
-                <button className="btn btn-gradient rounded-3 px-4" onClick={save}>保存</button>
+                <button className="btn btn-gradient rounded-3 px-4" disabled={saving} onClick={save}>{saving ? '保存中…' : '保存'}</button>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {viewId !== null && (() => {
+        const cur = notes.find(n => n.id === viewId)
+        if (!cur) return null
+        return (
+        <div className="modal d-block modal-shell" tabIndex="-1" onClick={() => setViewId(null)}>
+          <div className="modal-dialog modal-dialog-centered" onClick={e => e.stopPropagation()}>
+            <div className="modal-content p-2">
+              <div className="modal-header">
+                <h5 className="modal-title fw-bold"><span className="note-mood">{cur.mood}</span> 这一刻</h5>
+                <button className="btn-close" onClick={() => setViewId(null)} /></div>
+              <div className="modal-body">
+                <div className="note-view-text">{cur.text}</div>
+                <div className="small text-muted text-end mt-3">
+                  {cur.decor.join(' ')} {timeLabel(cur.time)}
+                </div>
+              </div>
+              <div className="modal-footer px-3 pb-3">
+                <button className="btn btn-light rounded-3 px-4" onClick={() => setViewId(null)}>关闭</button>
+                <button className="btn btn-outline-danger rounded-3 px-4"
+                        onClick={() => { del(cur.id); setViewId(null) }}>🗑️ 删除</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        )
+      })()}
     </div>
   )
 }

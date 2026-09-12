@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef } from 'react'
 
 // 属性 → 颜色(参考宝可梦官方属性色)
 const TYPE_COLORS = {
@@ -59,10 +59,12 @@ const fetchWithRetry = async (url, { timeout = 5000, retries = 1 } = {}) => {
 // 从 PokéAPI 随机抽一只宝可梦展示,可切换异色、听叫声、点击换一只
 export default function PokemonCard() {
   const [pokemon, setPokemon] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
   const [shiny, setShiny] = useState(false)
+  const [flipped, setFlipped] = useState(false)
   const audioRef = useRef(null)
+  const startedRef = useRef(false)
 
   const roll = useCallback(async () => {
     setLoading(true)
@@ -95,7 +97,14 @@ export default function PokemonCard() {
     }
   }, [])
 
-  useEffect(() => { roll() }, [roll])
+  // 不翻面就不加载,第一次翻面时才开始请求
+  const ensureLoaded = useCallback(() => {
+    if (startedRef.current) return
+    startedRef.current = true
+    roll()
+  }, [roll])
+
+  const flip = () => { setFlipped(f => !f); ensureLoaded() }
 
   // 官方原画优先,异色/普通/像素图依次回退
   const image = pokemon && (
@@ -113,52 +122,71 @@ export default function PokemonCard() {
   }
 
   return (
-    <div className="card p-3 w-100 poke-card" style={{ '--type-color': typeColor }}>
-      <div className="d-flex justify-content-between align-items-center mb-2">
-        <span className="small text-muted fw-semibold">🎲 今日偶遇</span>
-        <button className="btn btn-sm btn-outline-plain rounded-pill px-3" onClick={roll}>换一只</button>
-      </div>
-
-      {loading ? (
-        <div className="flex-grow-1 d-flex align-items-center justify-content-center small text-muted">正在草丛里寻找…</div>
-      ) : (
-        <div className="d-flex flex-column align-items-center">
-          {/* 圆形属性色光环 + 官方原画 */}
-          <div className="poke-orb position-relative">
-            {image
-              ? <img src={image} alt={pokemon.name} className="poke-img" />
-              : <span style={{ fontSize: 48 }} className="text-muted">?</span>}
-            {hasShiny && (
-              <button type="button" className={`poke-shiny-btn ${shiny ? 'on' : ''}`}
-                      title={shiny ? '切回普通形态' : '看看异色(闪光)形态'}
-                      aria-pressed={shiny} onClick={() => setShiny(v => !v)}>✨</button>
-            )}
+    <div className="flip-scene" onClick={flip}>
+      <div className={`flip-inner ${flipped ? 'flipped' : ''}`}>
+        <div className="flip-face front">
+          <div className="card p-3 w-100 h-100 poke-card poke-cover d-flex flex-column align-items-center justify-content-center" style={{ '--type-color': typeColor }}>
+            <span className="weather-emoji" style={{ fontSize: 44 }}>🎲</span>
+            <div className="small text-muted mt-2">今日偶遇</div>
+            <div className="small text-muted">🔄 点击翻面看看是谁</div>
           </div>
-
-          <div className="d-flex align-items-center gap-2 mt-2">
-            <span className="fw-bold text-capitalize" style={{ fontSize: '1.15rem' }}>{pokemon.name}</span>
-            {pokemon.cry && (
-              <button type="button" className="poke-cry-btn" title="听叫声" onClick={playCry}>🔊</button>
-            )}
-          </div>
-          <div className="small text-muted mb-2">No.{String(pokemon.id).padStart(4, '0')}</div>
-
-          <div className="d-flex gap-2 mb-2">
-            {pokemon.types.length
-              ? pokemon.types.map(t => (
-                  <span key={t} className="poke-type-badge text-capitalize"
-                        style={{ background: TYPE_COLORS[t] || '#888' }}>{t}</span>
-                ))
-              : <span className="poke-type-badge" style={{ background: '#94a3b8' }}>type ??</span>}
-          </div>
-
-          {pokemon.height && (
-            <div className="small text-muted">
-              身高 {pokemon.height} m · 体重 {pokemon.weight} kg
-            </div>
-          )}
         </div>
-      )}
+        <div className="flip-face back">
+          <div className="card p-3 w-100 h-100 poke-card" style={{ '--type-color': typeColor }} onClick={e => e.stopPropagation()}>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <span className="small text-muted fw-semibold">🎲 今日偶遇</span>
+              <button className="btn btn-sm btn-outline-plain rounded-pill px-3" onClick={roll}>换一只</button>
+            </div>
+
+            {loading ? (
+              <div className="flex-grow-1 d-flex align-items-center justify-content-center small text-muted">正在草丛里寻找…</div>
+            ) : !pokemon ? (
+              <div className="flex-grow-1 d-flex flex-column align-items-center justify-content-center small text-muted">
+                <span style={{ fontSize: 40 }}>🌿</span>
+                <div className="mt-2">草丛空空如也,网络好像不太顺畅</div>
+                <button className="btn btn-sm btn-outline-plain rounded-pill px-3 mt-2" onClick={roll}>再找一次</button>
+              </div>
+            ) : (
+              <div className="d-flex flex-column align-items-center">
+                {/* 圆形属性色光环 + 官方原画 */}
+                <div className="poke-orb position-relative">
+                  {image
+                    ? <img src={image} alt={pokemon.name} className="poke-img" />
+                    : <span style={{ fontSize: 48 }} className="text-muted">?</span>}
+                  {hasShiny && (
+                    <button type="button" className={`poke-shiny-btn ${shiny ? 'on' : ''}`}
+                            title={shiny ? '切回普通形态' : '看看异色(闪光)形态'}
+                            aria-pressed={shiny} onClick={() => setShiny(v => !v)}>✨</button>
+                  )}
+                </div>
+
+                <div className="d-flex align-items-center gap-2 mt-2">
+                  <span className="fw-bold text-capitalize" style={{ fontSize: '1.15rem' }}>{pokemon.name}</span>
+                  {pokemon.cry && (
+                    <button type="button" className="poke-cry-btn" title="听叫声" onClick={playCry}>🔊</button>
+                  )}
+                </div>
+                <div className="small text-muted mb-2">No.{String(pokemon.id).padStart(4, '0')}</div>
+
+                <div className="d-flex gap-2 mb-2">
+                  {pokemon.types.length
+                    ? pokemon.types.map(t => (
+                        <span key={t} className="poke-type-badge text-capitalize"
+                              style={{ background: TYPE_COLORS[t] || '#888' }}>{t}</span>
+                      ))
+                    : <span className="poke-type-badge" style={{ background: '#94a3b8' }}>type ??</span>}
+                </div>
+
+                {pokemon.height && (
+                  <div className="small text-muted">
+                    身高 {pokemon.height} m · 体重 {pokemon.weight} kg
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

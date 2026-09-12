@@ -398,6 +398,59 @@ def delete_practice(pid):
     return ok({"ok": True})
 
 
+# ---------- 随想笔记 API ----------
+
+@app.route("/api/notes", methods=["GET"])
+def list_notes():
+    conn = get_conn()
+    with conn.cursor() as c:
+        c.execute(
+            "SELECT id, mood, decor, text, "
+            "DATE_FORMAT(created_at, '%%Y-%%m-%%dT%%H:%%i:%%s') AS time "
+            "FROM mood_notes WHERE user_id=%s ORDER BY created_at DESC, id DESC LIMIT 200",
+            (g.user_id,),
+        )
+        rows = c.fetchall()
+    conn.close()
+    for r in rows:
+        r["decor"] = json.loads(r["decor"] or "[]")
+    return ok(rows)
+
+
+@app.route("/api/notes", methods=["POST"])
+def add_note():
+    data = request.get_json() or {}
+    text = (data.get("text") or "").strip()
+    if not text:
+        return jsonify(error="写点什么再保存吧~"), 400
+    if len(text) > 500:
+        return jsonify(error="随想最多 500 字"), 400
+    mood = (data.get("mood") or "😊")[:16]
+    decor = json.dumps([d for d in (data.get("decor") or []) if isinstance(d, str)][:12], ensure_ascii=False)
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            c.execute(
+                "INSERT INTO mood_notes(user_id, mood, decor, text) VALUES (%s,%s,%s,%s)",
+                (g.user_id, mood, decor, text),
+            )
+            nid = c.lastrowid
+        conn.commit()
+    finally:
+        conn.close()
+    return ok({"id": nid})
+
+
+@app.route("/api/notes/<int:nid>", methods=["DELETE"])
+def delete_note(nid):
+    conn = get_conn()
+    with conn.cursor() as c:
+        c.execute("DELETE FROM mood_notes WHERE id=%s AND user_id=%s", (nid, g.user_id))
+    conn.commit()
+    conn.close()
+    return ok({"ok": True})
+
+
 if __name__ == "__main__":
     init_db()
     app.run(debug=True, host="0.0.0.0", port=5000)

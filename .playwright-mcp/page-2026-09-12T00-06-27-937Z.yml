@@ -1,0 +1,113 @@
+- generic [ref=f1e150]:
+  - navigation [ref=f1e151]:
+    - generic [ref=f1e152]:
+      - generic [ref=f1e153]: ✦ 我的账本
+      - generic [ref=f1e154]:
+        - link "👤" [ref=f1e155] [cursor=pointer]:
+          - /url: "#/profile"
+        - generic [ref=f1e157]: test
+        - link "退出" [ref=f1e158] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=f1e161]:
+    - generic [ref=f1e162]:
+      - button "‹" [ref=f1e163] [cursor=pointer]
+      - generic [ref=f1e164]: 2026 年 9 月
+      - button "›" [ref=f1e165] [cursor=pointer]
+    - generic [ref=f1e166]:
+      - generic [ref=f1e168]:
+        - generic [ref=f1e169]: 支出
+        - generic [ref=f1e170]: ¥0.00
+      - generic [ref=f1e172]:
+        - generic [ref=f1e173]: 收入
+        - generic [ref=f1e174]: ¥0.00
+      - generic [ref=f1e176]:
+        - generic [ref=f1e177]: 结余
+        - generic [ref=f1e178]: ¥0.00
+    - generic [ref=f1e179]:
+      - generic [ref=f1e180]: 🎯 本月预算
+      - generic [ref=f1e183]:
+        - generic [ref=f1e184]: 还没有设置预算,设一个控制开销吧 ✨
+        - link "去设置" [ref=f1e185] [cursor=pointer]:
+          - /url: "#"
+    - generic [ref=f1e186]:
+      - generic [ref=f1e189] [cursor=pointer]:
+        - generic [ref=f1e191]:
+          - generic [ref=f1e192]: 🌤️
+          - generic [ref=f1e193]: 今日天气
+          - generic [ref=f1e194]: 🔄 点击翻面查看
+        - generic [ref=f1e195]: 正在仰望天空… 🔭
+      - generic [ref=f1e199]:
+        - generic [ref=f1e200]:
+          - generic [ref=f1e201]: 📚 今日单词
+          - button "换一个" [ref=f1e202] [cursor=pointer]
+        - generic [ref=f1e203]:
+          - generic [ref=f1e204]:
+            - generic [ref=f1e205]: imply
+            - button "🔊" [ref=f1e206] [cursor=pointer]
+          - generic [ref=f1e207]: /ɪmˈplaɪ/
+          - button "👀 想想意思,点击揭晓" [ref=f1e208] [cursor=pointer]
+      - generic [ref=f1e211] [cursor=pointer]:
+        - generic [ref=f1e213]:
+          - generic [ref=f1e214]: 🎲
+          - generic [ref=f1e215]: 今日偶遇
+          - generic [ref=f1e216]: 🔄 点击翻面看看是谁
+        - generic [ref=f1e218]:
+          - generic [ref=f1e219]:
+            - generic [ref=f1e220]: 🎲 今日偶遇
+            - button "换一只" [ref=f1e221]
+          - generic [ref=f1e222]:
+            - generic [ref=f1e223]: 🌿
+            - generic [ref=f1e224]: 草丛空空如也,网络好像不太顺畅
+            - button "再找一次" [ref=f1e225]
+      - generic [ref=f1e227]:
+        - generic [ref=f1e228]:
+          - generic [ref=f1e229]: 📔 随想笔记本
+          - button "✍️ 写一笔" [ref=f1e230] [cursor=pointer]
+        - generic [ref=f1e231]:
+          - generic "点击查看全文" [ref=f1e232] [cursor=pointer]:
+            - generic [ref=f1e233]: 😊
+            - generic [ref=f1e234]:
+              - generic [ref=f1e235]: 新写的一条验证随想
+              - generic [ref=f1e236]: 9/12 08:04
+          - generic "点击查看全文" [ref=f1e237] [cursor=pointer]:
+            - generic [ref=f1e238]: 😊
+            - generic [ref=f1e239]:
+              - generic [ref=f1e240]: 第一条随想
+              - generic [ref=f1e241]: ✨ 🌈 9/12 07:02
+          - generic "点击查看全文" [ref=f1e242] [cursor=pointer]:
+            - generic [ref=f1e243]: 😭
+            - generic [ref=f1e244]:
+              - generic [ref=f1e245]: 这是一条很长的随想。这是一条很长的随想。这是一条很长的随想。这是一条很长的随想。这是一条很长的随想。这是一条很长的随想。这是一条很长的随想。这是一条很长的随想。这是一条很长的随想。这是一条很长的随想。第二条随想
+              - generic [ref=f1e246]: ✨ 🌈 9/12 03:02
+        - generic [ref=f1e341]: 共 4 条随想
+      - generic [ref=f1e302]:
+        - generic [ref=f1e303]:
+          - generic [ref=f1e304]: 🇯🇵 日语打卡
+          - generic [ref=f1e305]:
+            - button "五十音" [ref=f1e306] [cursor=pointer]
+            - button "单词" [ref=f1e307] [cursor=pointer]
+        - generic [ref=f1e308]:
+          - button "摸摸小鸟" [ref=f1e309] [cursor=pointer]
+          - generic [ref=f1e324]:
+            - generic [ref=f1e325]:
+              - generic [ref=f1e326]: れ
+              - generic [ref=f1e327]: レ
+            - button "👀 猜猜罗马音,点击揭晓" [ref=f1e328] [cursor=pointer]
+        - button "换一个" [ref=f1e329] [cursor=pointer]
+    - generic [ref=f1e331]:
+      - generic [ref=f1e332]: 🪄
+      - text: 本月暂无记录点击右下角 ＋ 记一笔吧
+    - button "＋" [ref=f1e333] [cursor=pointer]
+  - generic [ref=f1e334]:
+    - link "📒 记账" [ref=f1e335] [cursor=pointer]:
+      - /url: "#/"
+      - generic [ref=f1e336]: 📒
+      - text: 记账
+    - link "📊 统计" [ref=f1e337] [cursor=pointer]:
+      - /url: "#/stats"
+      - generic [ref=f1e338]: 📊
+      - text: 统计
+    - link "🎸 练习" [ref=f1e339] [cursor=pointer]:
+      - /url: "#/practice"
+      - generic [ref=f1e340]: 🎸
+      - text: 练习

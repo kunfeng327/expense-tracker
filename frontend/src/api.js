@@ -42,6 +42,9 @@ export const api = {
   listPractice: () => req('/api/practice'),
   addPractice: body => req('/api/practice', { method: 'POST', body: JSON.stringify(body) }),
   deletePractice: id => req(`/api/practice/${id}`, { method: 'DELETE' }),
+  listNotes: () => req('/api/notes'),
+  addNote: body => req('/api/notes', { method: 'POST', body: JSON.stringify(body) }),
+  deleteNote: id => req(`/api/notes/${id}`, { method: 'DELETE' }),
 }
 
 export const fmt = n => '¥' + Number(n || 0).toFixed(2)

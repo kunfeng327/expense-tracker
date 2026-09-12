@@ -1,0 +1,78 @@
+- generic [ref=e233]:
+  - navigation [ref=e234]:
+    - generic [ref=e235]:
+      - generic [ref=e236]: ✦ 我的账本
+      - generic [ref=e237]:
+        - link "👤" [ref=e238] [cursor=pointer]:
+          - /url: "#/profile"
+        - generic [ref=e240]: pkf
+        - link "退出" [ref=e241] [cursor=pointer]:
+          - /url: "#"
+  - generic [ref=e244]:
+    - generic [ref=e245]:
+      - generic [ref=e248] [cursor=pointer]:
+        - generic [ref=e250]:
+          - generic [ref=e251]: 🌤️
+          - generic [ref=e252]: 今日天气
+          - generic [ref=e253]: 🔄 点击翻面查看
+        - generic [ref=e254]: 正在仰望天空… 🔭
+      - generic [ref=e258]:
+        - generic [ref=e259]:
+          - generic [ref=e260]: 📚 今日单词
+          - button "换一个" [ref=e261] [cursor=pointer]
+        - generic [ref=e262]:
+          - generic [ref=e263]:
+            - generic [ref=e264]: embark
+            - button "🔊" [ref=e265] [cursor=pointer]
+          - generic [ref=e266]: /ɪmˈbɑːk/
+          - button "👀 想想意思,点击揭晓" [ref=e267] [cursor=pointer]
+      - generic [ref=e270] [cursor=pointer]:
+        - generic [ref=e272]:
+          - generic [ref=e273]: 🎲
+          - generic [ref=e274]: 今日偶遇
+          - generic [ref=e275]: 🔄 点击翻面看看是谁
+        - generic [ref=e277]:
+          - generic [ref=e278]:
+            - generic [ref=e279]: 🎲 今日偶遇
+            - button "换一只" [ref=e280]
+          - generic [ref=e281]:
+            - generic [ref=e282]: 🌿
+            - generic [ref=e283]: 草丛空空如也,网络好像不太顺畅
+            - button "再找一次" [ref=e284]
+      - generic [ref=e286]:
+        - generic [ref=e287]:
+          - generic [ref=e288]: 📔 随想笔记本
+          - button "✍️ 写一笔" [ref=e289] [cursor=pointer]
+        - generic "点击查看全文" [ref=e291] [cursor=pointer]:
+          - generic [ref=e292]: 😭
+          - generic [ref=e293]:
+            - generic [ref=e294]: haoeeeee
+            - generic [ref=e295]: ☕ 9/12 08:14
+      - generic [ref=e297]:
+        - generic [ref=e298]:
+          - generic [ref=e299]: 🇯🇵 日语打卡
+          - generic [ref=e300]:
+            - button "五十音" [ref=e301] [cursor=pointer]
+            - button "单词" [ref=e302] [cursor=pointer]
+        - generic [ref=e303]:
+          - button "摸摸小鸟" [ref=e304] [cursor=pointer]
+          - generic [ref=e319]:
+            - generic [ref=e320]:
+              - generic [ref=e321]: そ
+              - generic [ref=e322]: ソ
+            - button "👀 猜猜罗马音,点击揭晓" [ref=e323] [cursor=pointer]
+        - button "换一个" [ref=e324] [cursor=pointer]
+    - button "＋" [ref=e325] [cursor=pointer]
+  - generic [ref=e326]:
+    - link "📒 记账" [ref=e327] [cursor=pointer]:
+      - /url: "#/"
+      - generic [ref=e328]: 📒
+      - text: 记账
+    - link "📊 统计" [ref=e329] [cursor=pointer]:
+      - /url: "#/stats"
+      - generic [ref=e330]: 📊
+      - text: 统计
+    - link "🎸 练习" [ref=e331] [cursor=pointer]:
+      - /url: "#/practice"
+      - generic [ref=e332]: 🎸
+      - text: 练习
