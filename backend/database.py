@@ -74,6 +74,7 @@ def init_db():
         c.execute(f"""
             CREATE TABLE IF NOT EXISTS records (
                 id {PK_INT},
+                user_id INT,
                 type VARCHAR(10) NOT NULL CHECK (type IN ('expense', 'income')),
                 amount DECIMAL(12,2) NOT NULL CHECK (amount > 0),
                 category_id INT NOT NULL,
@@ -130,22 +131,36 @@ def init_db():
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             ){TABLE_SUFFIX}
         """)
-        # 索引(Postgres 建表语法不支持内联 INDEX)
+        # 旧表迁移:records / budgets 增加 user_id(已有数据归给第一个用户)
+        _add_column_if_missing(c, "records", "user_id", "INT")
+        c.execute("UPDATE records SET user_id = (SELECT MIN(id) FROM users) WHERE user_id IS NULL")
+        c.execute("UPDATE budgets SET user_id = (SELECT MIN(id) FROM users) WHERE user_id IS NULL OR user_id = 0")
+
+        # 索引(建在迁移之后,确保 user_id 列已存在)
         if USE_PG:
             c.execute("CREATE INDEX IF NOT EXISTS idx_records_user ON records(user_id, date)")
             c.execute("CREATE INDEX IF NOT EXISTS idx_practice_user ON practice_logs(user_id, date)")
             c.execute("CREATE INDEX IF NOT EXISTS idx_notes_user ON mood_notes(user_id, created_at)")
         else:
-            c.execute("CREATE INDEX idx_user_date ON records(user_id, date)")
-            c.execute("CREATE INDEX idx_pl_user_date ON practice_logs(user_id, date)")
-            c.execute("CREATE INDEX idx_mn_user_time ON mood_notes(user_id, created_at)")
-
-        # 旧表迁移:records / budgets 增加 user_id(已有数据归给第一个用户)
-        _add_column_if_missing(c, "records", "user_id", "INT")
-        c.execute("UPDATE records SET user_id = (SELECT MIN(id) FROM users) WHERE user_id IS NULL")
-        c.execute("UPDATE budgets SET user_id = (SELECT MIN(id) FROM users) WHERE user_id IS NULL OR user_id = 0")
+            for table, idx, cols in [("records", "idx_user_date", "user_id, date"),
+                                     ("practice_logs", "idx_pl_user_date", "user_id, date"),
+                                     ("mood_notes", "idx_mn_user_time", "user_id, created_at")]:
+                _add_index_if_missing(c, table, idx, cols)
     conn.commit()
     conn.close()
+
+
+def _add_index_if_missing(cursor, table, index, cols):
+    if USE_PG:
+        cursor.execute(f'CREATE INDEX IF NOT EXISTS {index} ON {table}({cols})')
+        return
+    cursor.execute(
+        "SELECT COUNT(*) AS n FROM information_schema.STATISTICS "
+        "WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=%s AND INDEX_NAME=%s",
+        (table, index),
+    )
+    if not cursor.fetchone()["n"]:
+        cursor.execute(f"CREATE INDEX {index} ON {table}({cols})")
 
 
 def _add_column_if_missing(cursor, table, column, ddl):
