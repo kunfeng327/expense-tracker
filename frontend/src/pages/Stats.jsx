@@ -26,6 +26,7 @@ export default function Stats() {
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState({ type: 'expense', amount: '', category_id: null, date: today(), note: '' })
   const [budgetForm, setBudgetForm] = useState({ total: '', category_budget: {} })
+  const [saving, setSaving] = useState(false)
   const pieRef = useRef(null)
   const lineRef = useRef(null)
   const charts = useRef({})
@@ -127,12 +128,15 @@ export default function Stats() {
   const saveRecord = async () => {
     const body = { ...form, amount: parseFloat(form.amount) }
     if (!body.amount || !body.date || !body.category_id) return alert('请填写完整')
+    if (saving) return // 保存期间再点无效,防止手快连点插两条重复记录
+    setSaving(true)
     try {
       if (editing) await api.updateRecord(editing.id, body)
       else await api.addRecord(body)
       setShowRecordModal(false)
       refresh()
     } catch (e) { alert(e.message) }
+    setSaving(false)
   }
 
   const delRecord = async id => {
@@ -299,7 +303,9 @@ export default function Stats() {
               </div>
               <div className="modal-footer px-3 pb-3">
                 <button className="btn btn-light rounded-3 px-4" onClick={() => setShowRecordModal(false)}>取消</button>
-                <button className="btn btn-gradient rounded-3 px-4" onClick={saveRecord}>保存</button>
+                <button className="btn btn-gradient rounded-3 px-4" disabled={saving} onClick={saveRecord}>
+                  {saving ? '保存中…' : '保存'}
+                </button>
               </div>
             </div>
           </div>
