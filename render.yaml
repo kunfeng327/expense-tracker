@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: expense-tracker
+    runtime: python
+    plan: free
+    buildCommand: pip install -r backend/requirements.txt && cd frontend && npm ci --include=dev && npm run build
+    startCommand: cd backend && python -c "import database; database.init_db()" && gunicorn app:app --bind 0.0.0.0:$PORT --workers 2
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: expense-tracker-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+
+databases:
+  - name: expense-tracker-db
+    databaseName: expense_tracker
+    plan: free

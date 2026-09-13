@@ -1,4 +1,6 @@
-from flask import Flask, request, jsonify, g
+import os
+
+from flask import Flask, request, jsonify, g, send_from_directory
 from flask_cors import CORS
 from database import get_conn, init_db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,7 +11,7 @@ import json
 app = Flask(__name__)
 CORS(app)  # 开发时允许 Vite (5173端口) 跨域访问
 
-SECRET_KEY = "expense-tracker-secret-key-change-me"
+SECRET_KEY = os.environ.get("SECRET_KEY", "expense-tracker-secret-key-change-me")
 serializer = URLSafeTimedSerializer(SECRET_KEY, salt="auth")
 TOKEN_MAX_AGE = 7 * 24 * 3600  # token 有效期 7 天
 
@@ -62,10 +64,10 @@ def register():
     try:
         with conn.cursor() as c:
             c.execute(
-                "INSERT INTO users(username, password_hash) VALUES (%s, %s)",
+                "INSERT INTO users(username, password_hash) VALUES (%s, %s) RETURNING id",
                 (username, generate_password_hash(password)),
             )
-            uid = c.lastrowid
+            uid = c.fetchone()["id"]
         conn.commit()
     except Exception:
         conn.close()
@@ -177,15 +179,15 @@ def list_records():
     conn = get_conn()
     with conn.cursor() as c:
         sql = """
-            SELECT r.id, r.type, r.amount, r.category_id, DATE_FORMAT(r.date, '%%Y-%%m-%%d') AS date,
+            SELECT r.id, r.type, r.amount, r.category_id, TO_CHAR(r.date, 'YYYY-MM-DD') AS date,
                    r.note, c.name AS category, c.type AS category_type
             FROM records r JOIN categories c ON r.category_id = c.id
             WHERE r.user_id = %s
         """
         params = [g.user_id]
         if month:
-            sql += " AND r.date LIKE %s"
-            params.append(month + "%")
+            sql += " AND TO_CHAR(r.date, 'YYYY-MM') = %s"
+            params.append(month)
         sql += " ORDER BY r.date DESC, r.id DESC"
         c.execute(sql, params)
         rows = c.fetchall()
@@ -206,10 +208,11 @@ def add_record():
     conn = get_conn()
     with conn.cursor() as c:
         c.execute(
-            "INSERT INTO records(user_id, type, amount, category_id, date, note) VALUES (%s,%s,%s,%s,%s,%s)",
+            "INSERT INTO records(user_id, type, amount, category_id, date, note) "
+            "VALUES (%s,%s,%s,%s,%s,%s) RETURNING id",
             (g.user_id, data["type"], amount, int(data["category_id"]), data["date"], data.get("note", "")),
         )
-        rid = c.lastrowid
+        rid = c.fetchone()["id"]
     conn.commit()
     conn.close()
     return ok({"id": rid})
@@ -266,8 +269,8 @@ def add_category():
     conn = get_conn()
     try:
         with conn.cursor() as c:
-            c.execute("INSERT INTO categories(name, type) VALUES (%s, %s)", (name, ctype))
-            cid = c.lastrowid
+            c.execute("INSERT INTO categories(name, type) VALUES (%s, %s) RETURNING id", (name, ctype))
+            cid = c.fetchone()["id"]
         conn.commit()
     except Exception:
         conn.close()
@@ -312,7 +315,7 @@ def set_budget(month):
     with conn.cursor() as c:
         c.execute(
             "INSERT INTO budgets(user_id, month, total, category_budget) VALUES (%s,%s,%s,%s) "
-            "ON DUPLICATE KEY UPDATE total=VALUES(total), category_budget=VALUES(category_budget)",
+            "ON CONFLICT (user_id, month) DO UPDATE SET total=EXCLUDED.total, category_budget=EXCLUDED.category_budget",
             (g.user_id, month, total, cat),
         )
     conn.commit()
@@ -326,8 +329,8 @@ def get_stats(month):
     with conn.cursor() as c:
         summary = {"expense": 0.0, "income": 0.0}
         c.execute(
-            "SELECT type, SUM(amount) s FROM records WHERE user_id=%s AND date LIKE %s GROUP BY type",
-            (g.user_id, month + "%"),
+            "SELECT type, SUM(amount) s FROM records WHERE user_id=%s AND TO_CHAR(date, 'YYYY-MM') = %s GROUP BY type",
+            (g.user_id, month),
         )
         for r in c.fetchall():
             summary[r["type"]] = float(r["s"])
@@ -335,15 +338,15 @@ def get_stats(month):
         c.execute(
             "SELECT c.name AS name, SUM(r.amount) AS value FROM records r "
             "JOIN categories c ON r.category_id=c.id "
-            "WHERE r.user_id=%s AND r.date LIKE %s AND r.type='expense' GROUP BY c.name ORDER BY value DESC",
-            (g.user_id, month + "%"),
+            "WHERE r.user_id=%s AND TO_CHAR(r.date, 'YYYY-MM') = %s AND r.type='expense' GROUP BY c.name ORDER BY value DESC",
+            (g.user_id, month),
         )
         by_category = [{"name": r["name"], "value": float(r["value"])} for r in c.fetchall()]
 
         c.execute(
-            "SELECT DATE_FORMAT(date, '%%Y-%%m-%%d') AS date, SUM(amount) AS value FROM records "
-            "WHERE user_id=%s AND date LIKE %s AND type='expense' GROUP BY date ORDER BY date",
-            (g.user_id, month + "%"),
+            "SELECT TO_CHAR(date, 'YYYY-MM-DD') AS date, SUM(amount) AS value FROM records "
+            "WHERE user_id=%s AND TO_CHAR(date, 'YYYY-MM') = %s AND type='expense' GROUP BY date ORDER BY date",
+            (g.user_id, month),
         )
         by_day = [{"date": r["date"], "value": float(r["value"])} for r in c.fetchall()]
     conn.close()
@@ -357,7 +360,7 @@ def list_practice():
     conn = get_conn()
     with conn.cursor() as c:
         c.execute(
-            "SELECT id, DATE_FORMAT(date, '%%Y-%%m-%%d') AS date, instrument, kind, bpm, minutes, note "
+            "SELECT id, TO_CHAR(date, 'YYYY-MM-DD') AS date, instrument, kind, bpm, minutes, note "
             "FROM practice_logs WHERE user_id=%s ORDER BY date DESC, id DESC LIMIT 200",
             (g.user_id,),
         )
@@ -402,10 +405,10 @@ def add_practice():
         with conn.cursor() as c:
             c.execute(
                 "INSERT INTO practice_logs(user_id, date, instrument, kind, bpm, minutes, note) "
-                "VALUES (%s,%s,%s,%s,%s,%s,%s)",
+                "VALUES (%s,%s,%s,%s,%s,%s,%s) RETURNING id",
                 (g.user_id, date, instrument, kind, bpm, minutes, note),
             )
-            pid = c.lastrowid
+            pid = c.fetchone()["id"]
         conn.commit()
     finally:
         conn.close()
@@ -430,7 +433,7 @@ def list_notes():
     with conn.cursor() as c:
         c.execute(
             "SELECT id, mood, decor, text, "
-            "DATE_FORMAT(created_at, '%%Y-%%m-%%dT%%H:%%i:%%s') AS time "
+            "TO_CHAR(created_at, 'YYYY-MM-DD\"T\"HH24:MI:SS') AS time "
             "FROM mood_notes WHERE user_id=%s ORDER BY created_at DESC, id DESC LIMIT 200",
             (g.user_id,),
         )
@@ -455,10 +458,10 @@ def add_note():
     try:
         with conn.cursor() as c:
             c.execute(
-                "INSERT INTO mood_notes(user_id, mood, decor, text) VALUES (%s,%s,%s,%s)",
+                "INSERT INTO mood_notes(user_id, mood, decor, text) VALUES (%s,%s,%s,%s) RETURNING id",
                 (g.user_id, mood, decor, text),
             )
-            nid = c.lastrowid
+            nid = c.fetchone()["id"]
         conn.commit()
     finally:
         conn.close()
@@ -478,3 +481,18 @@ def delete_note(nid):
 if __name__ == "__main__":
     init_db()
     app.run(debug=True, host="0.0.0.0", port=5000)
+
+
+# ---------- 前端静态文件(生产环境由 Flask 托管 frontend/dist) ----------
+
+FRONTEND_DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "frontend", "dist")
+
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_spa(path):
+    if path.startswith("api/"):
+        return jsonify(error="Not Found"), 404
+    if path and os.path.isfile(os.path.join(FRONTEND_DIST, path)):
+        return send_from_directory(FRONTEND_DIST, path)
+    return send_from_directory(FRONTEND_DIST, "index.html")
