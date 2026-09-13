@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { api } from '../api'
+import { getCache, setCache } from '../cache'
 
 // 心情 emoji + 常用装饰 emoji
 const MOOD_EMOJIS = ['😊', '😔', '😠', '😭', '😱', '🥳', '😴', '🤔']
@@ -14,9 +15,12 @@ export default function NoteCard() {
   const [saving, setSaving] = useState(false)
 
   const load = () => {
-    api.listNotes().then(setNotes).catch(() => {}) // 拉取失败保持现状,不打断页面
+    api.listNotes().then(d => { setCache('notes', d); setNotes(d) })
+      .catch(() => {}) // 拉取失败保持现状,不打断页面
   }
   useEffect(() => {
+    const hit = getCache('notes')
+    if (hit) setNotes(hit) // 先秒显缓存,再后台刷新
     load()
     // 一次性迁移:把旧版存在 localStorage 的随想上传到账号,成功后清掉本地
     const migrate = async () => {

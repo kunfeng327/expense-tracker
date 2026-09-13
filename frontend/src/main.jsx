@@ -7,6 +7,7 @@ import Stats from './pages/Stats.jsx'
 import Login from './pages/Login.jsx'
 import Profile from './pages/Profile.jsx'
 import Practice from './pages/Practice.jsx'
+import { clearCache } from './cache.js'
 import './style.css'
 
 function Layout({ user, onLogout, profileAvatar, children }) {
@@ -70,6 +71,7 @@ function App() {
     localStorage.removeItem('token')
     localStorage.removeItem('username')
     localStorage.removeItem('avatar')
+    clearCache() // 清掉页面缓存,防止下个账号登录瞬间看到上个账号的数据
     setUser(null)
   }
 

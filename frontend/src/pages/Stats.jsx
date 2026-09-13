@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import * as echarts from 'echarts'
 import { api, fmt, monthShift } from '../api.js'
+import { getCache, setCache } from '../cache.js'
 
 const PALETTE = ['#6366f1', '#8b5cf6', '#f43f5e', '#f97316', '#10b981', '#0ea5e9', '#eab308', '#ec4899']
 
@@ -38,15 +39,32 @@ export default function Stats() {
   }, [])
 
   const refresh = useCallback(() => {
-    api.getStats(month).then(setStats).catch(() => {})
-    api.listRecords(month).then(setRecords).catch(() => {})
+    api.getStats(month).then(d => { setCache('stats:' + month, d); setStats(d) }).catch(() => {})
+    api.listRecords(month).then(d => { setCache('records:' + month, d); setRecords(d) }).catch(() => {})
     api.getBudget(month).then(b => {
+      setCache('budget:' + month, b)
       setBudget(b)
       setBudgetForm({ total: b.total || '', category_budget: { ...(b.category_budget || {}) } })
     }).catch(() => {})
   }, [month])
   useEffect(() => { refresh() }, [refresh])
-  useEffect(() => { api.listCategories().then(setCategories).catch(() => {}) }, [])
+  // 切页/切月回来先秒显缓存的数据,后台刷新到了再无声更新
+  useEffect(() => {
+    const s = getCache('stats:' + month)
+    if (s) setStats(s)
+    const r = getCache('records:' + month)
+    if (r) setRecords(r)
+    const b = getCache('budget:' + month)
+    if (b) {
+      setBudget(b)
+      setBudgetForm({ total: b.total || '', category_budget: { ...(b.category_budget || {}) } })
+    }
+  }, [month])
+  useEffect(() => {
+    const c = getCache('categories')
+    if (c) setCategories(c)
+    api.listCategories().then(d => { setCache('categories', d); setCategories(d) }).catch(() => {})
+  }, [])
 
   useEffect(() => {
     const { pie, line } = charts.current

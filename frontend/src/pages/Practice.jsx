@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { api } from '../api.js'
+import { getCache, setCache } from '../cache.js'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -25,8 +26,16 @@ export default function Practice() {
   })
   const [saving, setSaving] = useState(false)
 
-  const load = useCallback(async () => setLogs(await api.listPractice()), [])
-  useEffect(() => { load() }, [load])
+  const load = useCallback(async () => {
+    const logs = await api.listPractice()
+    setCache('practice', logs)
+    setLogs(logs)
+  }, [])
+  useEffect(() => {
+    const hit = getCache('practice')
+    if (hit) setLogs(hit) // 先秒显缓存,再后台刷新
+    load()
+  }, [load])
 
   const save = async () => {
     setSaving(true)
