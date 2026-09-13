@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: expense-tracker
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: >-
+      apt-get update -qq && apt-get install -y -qq nodejs npm >/dev/null 2>&1;
+      cd ../frontend && npm install --silent && npm run build;
+      cd ../backend && pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DATABASE_URL
+        sync: false   # 在 Render 控制台填写 Supabase 的 Postgres 连接串
+      - key: SECRET_KEY
+        generateValue: true
+    healthCheckPath: /api/auth/me

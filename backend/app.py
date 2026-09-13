@@ -1,15 +1,17 @@
-from flask import Flask, request, jsonify, g
+from flask import Flask, request, jsonify, g, send_from_directory
 from flask_cors import CORS
-from database import get_conn, init_db
+from database import (get_conn, init_db, last_id, DATE_FMT_D, DATE_FMT_TS,
+                      DATE_LIKE, UPSERT_BUDGET)
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 from datetime import datetime, date
 import json
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=None)  # 静态目录稍后手动指向前端构建产物
 CORS(app)  # 开发时允许 Vite (5173端口) 跨域访问
 
-SECRET_KEY = "expense-tracker-secret-key-change-me"
+SECRET_KEY = os.environ.get("SECRET_KEY", "expense-tracker-secret-key-change-me")
 serializer = URLSafeTimedSerializer(SECRET_KEY, salt="auth")
 TOKEN_MAX_AGE = 7 * 24 * 3600  # token 有效期 7 天
 
@@ -65,7 +67,7 @@ def register():
                 "INSERT INTO users(username, password_hash) VALUES (%s, %s)",
                 (username, generate_password_hash(password)),
             )
-            uid = c.lastrowid
+            uid = last_id(c)
         conn.commit()
     except Exception:
         conn.close()
@@ -176,15 +178,15 @@ def list_records():
     month = request.args.get("month")
     conn = get_conn()
     with conn.cursor() as c:
-        sql = """
-            SELECT r.id, r.type, r.amount, r.category_id, DATE_FORMAT(r.date, '%%Y-%%m-%%d') AS date,
+        sql = f"""
+            SELECT r.id, r.type, r.amount, r.category_id, {DATE_FMT_D % 'r.date'} AS date,
                    r.note, c.name AS category, c.type AS category_type
             FROM records r JOIN categories c ON r.category_id = c.id
             WHERE r.user_id = %s
         """
         params = [g.user_id]
         if month:
-            sql += " AND r.date LIKE %s"
+            sql += f" AND {DATE_LIKE % 'r.date'} %s"
             params.append(month + "%")
         sql += " ORDER BY r.date DESC, r.id DESC"
         c.execute(sql, params)
@@ -209,7 +211,7 @@ def add_record():
             "INSERT INTO records(user_id, type, amount, category_id, date, note) VALUES (%s,%s,%s,%s,%s,%s)",
             (g.user_id, data["type"], amount, int(data["category_id"]), data["date"], data.get("note", "")),
         )
-        rid = c.lastrowid
+        rid = last_id(c)
     conn.commit()
     conn.close()
     return ok({"id": rid})
@@ -267,7 +269,7 @@ def add_category():
     try:
         with conn.cursor() as c:
             c.execute("INSERT INTO categories(name, type) VALUES (%s, %s)", (name, ctype))
-            cid = c.lastrowid
+            cid = last_id(c)
         conn.commit()
     except Exception:
         conn.close()
@@ -311,8 +313,7 @@ def set_budget(month):
     conn = get_conn()
     with conn.cursor() as c:
         c.execute(
-            "INSERT INTO budgets(user_id, month, total, category_budget) VALUES (%s,%s,%s,%s) "
-            "ON DUPLICATE KEY UPDATE total=VALUES(total), category_budget=VALUES(category_budget)",
+            UPSERT_BUDGET,
             (g.user_id, month, total, cat),
         )
     conn.commit()
@@ -326,7 +327,7 @@ def get_stats(month):
     with conn.cursor() as c:
         summary = {"expense": 0.0, "income": 0.0}
         c.execute(
-            "SELECT type, SUM(amount) s FROM records WHERE user_id=%s AND date LIKE %s GROUP BY type",
+            f"SELECT type, SUM(amount) s FROM records WHERE user_id=%s AND {DATE_LIKE % 'date'} %s GROUP BY type",
             (g.user_id, month + "%"),
         )
         for r in c.fetchall():
@@ -335,14 +336,14 @@ def get_stats(month):
         c.execute(
             "SELECT c.name AS name, SUM(r.amount) AS value FROM records r "
             "JOIN categories c ON r.category_id=c.id "
-            "WHERE r.user_id=%s AND r.date LIKE %s AND r.type='expense' GROUP BY c.name ORDER BY value DESC",
+            f"WHERE r.user_id=%s AND {DATE_LIKE % 'r.date'} %s AND r.type='expense' GROUP BY c.name ORDER BY value DESC",
             (g.user_id, month + "%"),
         )
         by_category = [{"name": r["name"], "value": float(r["value"])} for r in c.fetchall()]
 
         c.execute(
-            "SELECT DATE_FORMAT(date, '%%Y-%%m-%%d') AS date, SUM(amount) AS value FROM records "
-            "WHERE user_id=%s AND date LIKE %s AND type='expense' GROUP BY date ORDER BY date",
+            f"SELECT {DATE_FMT_D % 'date'} AS date, SUM(amount) AS value FROM records "
+            f"WHERE user_id=%s AND {DATE_LIKE % 'date'} %s AND type='expense' GROUP BY date ORDER BY date",
             (g.user_id, month + "%"),
         )
         by_day = [{"date": r["date"], "value": float(r["value"])} for r in c.fetchall()]
@@ -357,7 +358,7 @@ def list_practice():
     conn = get_conn()
     with conn.cursor() as c:
         c.execute(
-            "SELECT id, DATE_FORMAT(date, '%%Y-%%m-%%d') AS date, instrument, kind, bpm, minutes, note "
+            f"SELECT id, {DATE_FMT_D % 'date'} AS date, instrument, kind, bpm, minutes, note "
             "FROM practice_logs WHERE user_id=%s ORDER BY date DESC, id DESC LIMIT 200",
             (g.user_id,),
         )
@@ -405,7 +406,7 @@ def add_practice():
                 "VALUES (%s,%s,%s,%s,%s,%s,%s)",
                 (g.user_id, date, instrument, kind, bpm, minutes, note),
             )
-            pid = c.lastrowid
+            pid = last_id(c)
         conn.commit()
     finally:
         conn.close()
@@ -429,8 +430,7 @@ def list_notes():
     conn = get_conn()
     with conn.cursor() as c:
         c.execute(
-            "SELECT id, mood, decor, text, "
-            "DATE_FORMAT(created_at, '%%Y-%%m-%%dT%%H:%%i:%%s') AS time "
+            f"SELECT id, mood, decor, text, {DATE_FMT_TS % 'created_at'} AS time "
             "FROM mood_notes WHERE user_id=%s ORDER BY created_at DESC, id DESC LIMIT 200",
             (g.user_id,),
         )
@@ -458,7 +458,7 @@ def add_note():
                 "INSERT INTO mood_notes(user_id, mood, decor, text) VALUES (%s,%s,%s,%s)",
                 (g.user_id, mood, decor, text),
             )
-            nid = c.lastrowid
+            nid = last_id(c)
         conn.commit()
     finally:
         conn.close()
@@ -475,6 +475,28 @@ def delete_note(nid):
     return ok({"ok": True})
 
 
+# ---------- 前端静态托管(生产环境:Render 上构建好 frontend/dist 后由 Flask 直接服务) ----------
+
+DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "frontend", "dist")
+
+
+@app.route("/")
+def index():
+    if os.path.exists(DIST):
+        return send_from_directory(DIST, "index.html")
+    return jsonify(error="前端未构建,仅 API 服务运行中"), 200
+
+
+@app.route("/<path:path>")
+def static_files(path):
+    # 先找静态文件,找不到的一律回退到 index.html(前端是 SPA 路由)
+    if os.path.exists(os.path.join(DIST, path)):
+        return send_from_directory(DIST, path)
+    if os.path.exists(DIST):
+        return send_from_directory(DIST, "index.html")
+    return jsonify(error="Not Found"), 404
+
+
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

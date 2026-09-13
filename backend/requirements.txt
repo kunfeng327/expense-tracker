@@ -1,3 +1,6 @@
 flask
 flask-cors
 pymysql
+psycopg2-binary
+gunicorn
+itsdangerous

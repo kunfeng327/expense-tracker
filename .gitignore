@@ -13,3 +13,8 @@ frontend/dist/
 # 其他
 .DS_Store
 *.log
+
+# 截图与临时文件
+*.png
+.playwright-mcp/
+flask.log
