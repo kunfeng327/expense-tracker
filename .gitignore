@@ -13,3 +13,7 @@ frontend/dist/
 # 其他
 .DS_Store
 *.log
+
+# 截图与调试产物
+.playwright-mcp/
+/*.png

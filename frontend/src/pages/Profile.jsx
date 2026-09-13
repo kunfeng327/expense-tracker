@@ -63,6 +63,13 @@ export default function Profile({ onSaved }) {
     setSaving(false)
   }
 
+  // 头像即点即存:选完立即保存并同步导航栏,不用再点"保存"
+  const pickAvatar = a => {
+    setForm(f => ({ ...f, avatar: a }))
+    localStorage.setItem('avatar', a)
+    api.setProfile({ ...form, avatar: a }).then(() => onSaved?.()).catch(() => {})
+  }
+
   // 注销账号:验证密码后删除全部数据,不可恢复
   const confirmDelete = async () => {
     if (!delPassword) return alert('请输入密码确认')
@@ -110,7 +117,7 @@ export default function Profile({ onSaved }) {
           {AVATARS.map(a => (
             <button key={a} type="button"
                     className={`note-emoji-btn small-size ${form.avatar === a ? 'active' : ''}`}
-                    onClick={() => setForm(f => ({ ...f, avatar: a }))}>{a}</button>
+                    onClick={() => pickAvatar(a)}>{a}</button>
           ))}
         </div>
 
