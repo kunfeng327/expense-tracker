@@ -131,6 +131,15 @@ def init_db():
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             ){TABLE_SUFFIX}
         """)
+        # 圣经阅读进度:每账号一行,记录当前读到哪卷哪章、最后推进日期
+        c.execute(f"""
+            CREATE TABLE IF NOT EXISTS bible_progress (
+                user_id INT PRIMARY KEY,
+                book VARCHAR(20) NOT NULL,
+                chapter INT NOT NULL,
+                last_date DATE NULL
+            ){TABLE_SUFFIX}
+        """)
         # 旧表迁移:records / budgets 增加 user_id(已有数据归给第一个用户)
         _add_column_if_missing(c, "records", "user_id", "INT")
         c.execute("UPDATE records SET user_id = (SELECT MIN(id) FROM users) WHERE user_id IS NULL")

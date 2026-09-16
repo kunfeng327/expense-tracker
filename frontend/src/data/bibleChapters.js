@@ -2,6 +2,16 @@
 // 每天按"当年第几天"轮换章节和金句;点击卡片可展开整章经文
 export const BIBLE_CHAPTERS = [
   {
+    apiRef: '詩篇 23',
+    apiRef: '詩篇 1',
+    apiRef: '詩篇 121',
+    apiRef: '詩篇 131',
+    apiRef: '詩篇 133',
+    apiRef: '馬太福音 5',
+    apiRef: '哥林多前書 13',
+    apiRef: '約翰福音 15',
+    apiRef: '腓立比書 4',
+    apiRef: '以賽亞書 40',
     ref: '诗篇 23',
     verses: [
       '耶和华是我的牧者,我必不致缺乏。',

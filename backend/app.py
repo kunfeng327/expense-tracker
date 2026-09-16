@@ -484,6 +484,73 @@ def delete_note(nid):
     return ok({"ok": True})
 
 
+# ---------- 圣经阅读进度 API(每日一章,读完 +1) ----------
+
+# 顺序读经计划:书卷名 + 章数,读完循环(书卷编号见前端 BOOKS 映射)
+BIBLE_PLAN = [("诗篇", 150), ("箴言", 31), ("传道书", 12), ("马太福音", 28), ("约翰福音", 21)]
+
+
+def _bible_upsert(cursor, uid, book, chapter, last_date):
+    if os.environ.get("DATABASE_URL"):  # Postgres
+        cursor.execute(
+            "INSERT INTO bible_progress(user_id, book, chapter, last_date) VALUES (%s,%s,%s,%s) "
+            "ON CONFLICT (user_id) DO UPDATE SET book=EXCLUDED.book, chapter=EXCLUDED.chapter, last_date=EXCLUDED.last_date",
+            (uid, book, chapter, last_date),
+        )
+    else:  # MySQL
+        cursor.execute(
+            "INSERT INTO bible_progress(user_id, book, chapter, last_date) VALUES (%s,%s,%s,%s) "
+            "ON DUPLICATE KEY UPDATE book=VALUES(book), chapter=VALUES(chapter), last_date=VALUES(last_date)",
+            (uid, book, chapter, last_date),
+        )
+
+
+@app.route("/api/bible/progress", methods=["GET"])
+def bible_progress():
+    """返回今天该读的章节;首次访问自动从计划第一卷第 1 章开始"""
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT book, chapter, last_date FROM bible_progress WHERE user_id=%s", (g.user_id,))
+            row = c.fetchone()
+            if not row:
+                book, chapter = BIBLE_PLAN[0][0], 1
+                _bible_upsert(c, g.user_id, book, chapter, None)
+                conn.commit()
+                row = {"book": book, "chapter": chapter, "last_date": None}
+    finally:
+        conn.close()
+    done_today = row["last_date"] is not None and str(row["last_date"]) == date.today().isoformat()
+    return ok({"book": row["book"], "chapter": row["chapter"], "doneToday": done_today})
+
+
+@app.route("/api/bible/done", methods=["POST"])
+def bible_done():
+    """标记今天读完:推进到下一章;当天重复调用不会重复推进"""
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            c.execute("SELECT book, chapter, last_date FROM bible_progress WHERE user_id=%s", (g.user_id,))
+            row = c.fetchone()
+            book = row["book"] if row else BIBLE_PLAN[0][0]
+            chapter = row["chapter"] if row else 1
+            today = date.today().isoformat()
+            already = row and row["last_date"] is not None and str(row["last_date"]) == today
+            if not already:
+                # 章数用尽则跳到计划中的下一卷,最后一卷读完回到第一卷
+                idx = next((i for i, (b, _) in enumerate(BIBLE_PLAN) if b == book), 0)
+                if chapter < BIBLE_PLAN[idx][1]:
+                    chapter += 1
+                else:
+                    nxt = (idx + 1) % len(BIBLE_PLAN)
+                    book, chapter = BIBLE_PLAN[nxt][0], 1
+                _bible_upsert(c, g.user_id, book, chapter, today)
+                conn.commit()
+    finally:
+        conn.close()
+    return ok({"ok": True, "book": book, "chapter": chapter})
+
+
 # ---------- 前端静态托管(生产环境:Render 上构建好 frontend/dist 后由 Flask 直接服务) ----------
 
 DIST = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "frontend", "dist")

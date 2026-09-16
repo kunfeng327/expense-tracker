@@ -46,6 +46,8 @@ export const api = {
   listNotes: () => req('/api/notes'),
   addNote: body => req('/api/notes', { method: 'POST', body: JSON.stringify(body) }),
   deleteNote: id => req(`/api/notes/${id}`, { method: 'DELETE' }),
+  getBibleProgress: () => req('/api/bible/progress'),
+  bibleDone: () => req('/api/bible/done', { method: 'POST' }),
 }
 
 export const fmt = n => '¥' + Number(n || 0).toFixed(2)
