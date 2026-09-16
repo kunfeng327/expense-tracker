@@ -156,4 +156,3 @@ export const KAOYAN_WORDS = [
   ['viable', '/ˈvaɪəbl/', 'adj. 可行的,能存活的'],
   ['vulnerable', '/ˈvʌlnərəbl/', 'adj. 脆弱的,易受伤的'],
   ['yield', '/jiːld/', 'v. 屈服,产出 n. 产量'],
-]

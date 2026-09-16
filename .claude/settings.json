@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git merge *)",
+      "Bash(git fetch *)",
+      "Bash(python -c \"import app; print\\('routes:', [r.rule for r in app.app.url_map.iter_rules\\(\\) if 'health' in r.rule]\\)\")",
+      "Bash(claude --version)",
+      "mcp__plugin_render_render__get_selected_workspace",
+      "mcp__plugin_render_render__list_services",
+      "mcp__plugin_render_render__list_workspaces",
+      "mcp__plugin_render_render__list_deploys",
+      "mcp__plugin_render_render__get_deploy",
+      "mcp__plugin_render_render__list_logs",
+      "Bash(curl -s -m 60 https://expense-tracker-gc5o.onrender.com/api/health)",
+      "Bash(curl -s -m 60 -o /dev/null -w \"首页 HTTP %{http_code}, %{size_download} bytes\\\\n\" https://expense-tracker-gc5o.onrender.com/)",
+      "Bash(curl -s -m 60 -X POST https://expense-tracker-gc5o.onrender.com/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"smoketest_probe\",\"password\":\"wrongpw\"}')",
+      "Bash(cmd /c start \"\" \"https://expense-tracker-gc5o.onrender.com\")",
+      "Bash(MSYS_NO_PATHCONV=1 claude mcp add playwright --scope user -- cmd /c npx -y @playwright/mcp@latest)",
+      "Bash(powershell -NoProfile -Command \"Start-Process 'https://expense-tracker-gc5o.onrender.com'\")",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_tabs",
+      "mcp__plugin_render_render__get_service",
+      "Bash(mysql --version)",
+      "Bash(python -c \"import pymysql\")",
+      "Bash(python -c \"import psycopg2\")",
+      "Bash(export MYSQL_PWD=20061223)",
+      "Bash('/c/Program Files/MySQL/MySQL Server 9.7/bin/mysql.exe' -h127.0.0.1 -uroot expense_tracker --default-character-set=utf8mb4 -e ' *)",
+      "Bash(python -m pip install --quiet pymysql psycopg2-binary)",
+      "Bash(python -c \"import pymysql, psycopg2; print\\('drivers OK'\\)\")",
+      "Bash(npm run *)",
+      "mcp__plugin_render_render__trigger_deploy"
+    ]
+  },
+  "enabledPlugins": {
+    "render@claude-plugins-official": true
+  }
+}
