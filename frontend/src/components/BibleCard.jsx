@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { api } from '../api'
 import { BIBLE_CHAPTERS } from '../data/bibleChapters.js'
 
-// 按当年第几天挑"今日金句"的序号(章节本身由服务端进度决定)
+// 北京时间的当天序号(用于挑"今日金句"),不受设备时区影响
 const dayOfYear = () => {
   const now = new Date()
-  const start = new Date(now.getFullYear(), 0, 0)
-  return Math.floor((now - start) / 86400000)
+  // 转成北京时间后再算当年第几天
+  const bj = new Date(now.getTime() + (now.getTimezoneOffset() + 480) * 60000)
+  const start = new Date(bj.getFullYear(), 0, 0)
+  return Math.floor((bj - start) / 86400000)
 }
 
 // 书卷名 → getbible.net 书卷编号(和合本简体 cus)

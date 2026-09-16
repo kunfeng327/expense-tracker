@@ -32,10 +32,11 @@ def last_id(cursor):
     return cursor.lastrowid
 
 # 日期转 'YYYY-MM-DD' 的 SQL 片段
-DATE_FMT_D = "TO_CHAR(%s, 'YYYY-MM-DD')" if USE_PG else "DATE_FORMAT(%s, '%%Y-%%m-%%d')"
+# MySQL 版写 %%%%:先经 Python % 格式化(%%→%),再经 pymysql 参数转义(%%→%)后才是 %Y
+DATE_FMT_D = "TO_CHAR(%s, 'YYYY-MM-DD')" if USE_PG else "DATE_FORMAT(%s, '%%%%Y-%%%%m-%%%%d')"
 # 时间转 'YYYY-MM-DDTHH:MM:SS'
 DATE_FMT_TS = ("TO_CHAR(%s, 'YYYY-MM-DD\"T\"HH24:MI:SS')" if USE_PG
-               else "DATE_FORMAT(%s, '%%Y-%%m-%%dT%%H:%%i:%%s')")
+               else "DATE_FORMAT(%s, '%%%%Y-%%%%m-%%%%dT%%%%H:%%%%i:%%%%s')")
 # DATE 列做 LIKE 前缀匹配(Postgres 需先转 text)
 DATE_LIKE = "%s::text LIKE" if USE_PG else "%s LIKE"
 # 预算 upsert
@@ -131,6 +132,18 @@ def init_db():
                 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             ){TABLE_SUFFIX}
         """)
+        # 每日任务:按账号+日期记录,历史可在日历里回看
+        c.execute(f"""
+            CREATE TABLE IF NOT EXISTS todo_items (
+                id {PK_INT},
+                user_id INT NOT NULL,
+                date DATE NOT NULL,
+                text VARCHAR(50) NOT NULL,
+                done BOOLEAN NOT NULL DEFAULT FALSE,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+            ){TABLE_SUFFIX}
+        """)
+        _add_column_if_missing(c, "todo_items", "done", "INT NOT NULL DEFAULT 0")
         # 圣经阅读进度:每账号一行,记录当前读到哪卷哪章、最后推进日期
         c.execute(f"""
             CREATE TABLE IF NOT EXISTS bible_progress (

@@ -4,7 +4,14 @@ from database import (get_conn, init_db, last_id, DATE_FMT_D, DATE_FMT_TS,
                       DATE_LIKE, UPSERT_BUDGET)
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
-from datetime import datetime, date
+from datetime import datetime, date, timedelta, timezone
+
+# 北京时间(UTC+8):服务器可能部署在任意时区(Render 默认 UTC),日期判断统一用它
+BJT = timezone(timedelta(hours=8))
+
+
+def bj_today():
+    return datetime.now(BJT).date()
 import json
 import os
 
@@ -395,7 +402,7 @@ def add_practice():
         except ValueError:
             return jsonify(error="日期格式应为 YYYY-MM-DD"), 400
     else:
-        date = datetime.now().strftime("%Y-%m-%d")
+        date = bj_today().strftime("%Y-%m-%d")
     try:
         bpm = int(bpm) if bpm not in (None, "") else None
         minutes = int(minutes) if minutes not in (None, "") else None
@@ -520,7 +527,7 @@ def bible_progress():
                 row = {"book": book, "chapter": chapter, "last_date": None}
     finally:
         conn.close()
-    done_today = row["last_date"] is not None and str(row["last_date"]) == date.today().isoformat()
+    done_today = row["last_date"] is not None and str(row["last_date"]) == bj_today().isoformat()
     return ok({"book": row["book"], "chapter": row["chapter"], "doneToday": done_today})
 
 
@@ -534,7 +541,7 @@ def bible_done():
             row = c.fetchone()
             book = row["book"] if row else BIBLE_PLAN[0][0]
             chapter = row["chapter"] if row else 1
-            today = date.today().isoformat()
+            today = bj_today().isoformat()
             already = row and row["last_date"] is not None and str(row["last_date"]) == today
             if not already:
                 # 章数用尽则跳到计划中的下一卷,最后一卷读完回到第一卷
@@ -549,6 +556,93 @@ def bible_done():
     finally:
         conn.close()
     return ok({"ok": True, "book": book, "chapter": chapter})
+
+
+# ---------- 每日任务 API(按账号+日期,历史供日历回看) ----------
+
+@app.route("/api/todo", methods=["GET"])
+def list_todo():
+    """某天的任务列表,默认今天;?month=YYYY-MM 则返回该月有任务的日子(日历打点用)"""
+    month = request.args.get("month")
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            if month:
+                c.execute(
+                    f"SELECT {DATE_FMT_D % 'date'} AS date, COUNT(*) AS total, SUM(done) AS done "
+                    f"FROM todo_items WHERE user_id=%s AND {DATE_LIKE % 'date'} %s GROUP BY date",
+                    (g.user_id, month + "%"),
+                )
+                return ok(c.fetchall())
+            d = request.args.get("date") or bj_today().strftime("%Y-%m-%d")
+            c.execute(
+                f"SELECT id, text, done FROM todo_items WHERE user_id=%s AND date=%s ORDER BY id",
+                (g.user_id, d),
+            )
+            return ok(c.fetchall())
+    finally:
+        conn.close()
+
+
+@app.route("/api/todo", methods=["POST"])
+def add_todo():
+    data = request.get_json() or {}
+    text = (data.get("text") or "").strip()
+    if not text:
+        return jsonify(error="任务内容不能为空"), 400
+    if len(text) > 50:
+        return jsonify(error="任务最多 50 字"), 400
+    # 只允许给今天加任务;历史日期只读
+    d = bj_today().strftime("%Y-%m-%d")
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            c.execute(
+                "INSERT INTO todo_items(user_id, date, text, done) VALUES (%s,%s,%s,FALSE)",
+                (g.user_id, d, text),
+            )
+            tid = last_id(c)
+        conn.commit()
+    finally:
+        conn.close()
+    return ok({"id": tid})
+
+
+@app.route("/api/todo/<int:tid>", methods=["PUT"])
+def update_todo(tid):
+    data = request.get_json() or {}
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            if "done" in data:
+                c.execute(
+                    "UPDATE todo_items SET done=%s WHERE id=%s AND user_id=%s AND date=%s",
+                    (bool(data["done"]), tid, g.user_id, bj_today().strftime("%Y-%m-%d")),
+                )
+            if "text" in data:
+                c.execute(
+                    "UPDATE todo_items SET text=%s WHERE id=%s AND user_id=%s AND date=%s",
+                    ((data["text"] or "").strip()[:50], tid, g.user_id, bj_today().strftime("%Y-%m-%d")),
+                )
+        conn.commit()
+    finally:
+        conn.close()
+    return ok({"ok": True})
+
+
+@app.route("/api/todo/<int:tid>", methods=["DELETE"])
+def delete_todo(tid):
+    conn = get_conn()
+    try:
+        with conn.cursor() as c:
+            c.execute(
+                "DELETE FROM todo_items WHERE id=%s AND user_id=%s AND date=%s",
+                (tid, g.user_id, bj_today().strftime("%Y-%m-%d")),
+            )
+        conn.commit()
+    finally:
+        conn.close()
+    return ok({"ok": True})
 
 
 # ---------- 前端静态托管(生产环境:Render 上构建好 frontend/dist 后由 Flask 直接服务) ----------

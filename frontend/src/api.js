@@ -48,6 +48,11 @@ export const api = {
   deleteNote: id => req(`/api/notes/${id}`, { method: 'DELETE' }),
   getBibleProgress: () => req('/api/bible/progress'),
   bibleDone: () => req('/api/bible/done', { method: 'POST' }),
+  listTodo: date => req(`/api/todo${date ? `?date=${date}` : ''}`),
+  listTodoMonth: month => req(`/api/todo?month=${month}`),
+  addTodo: body => req('/api/todo', { method: 'POST', body: JSON.stringify(body) }),
+  updateTodo: (id, body) => req(`/api/todo/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  deleteTodo: id => req(`/api/todo/${id}`, { method: 'DELETE' }),
 }
 
 export const fmt = n => '¥' + Number(n || 0).toFixed(2)
