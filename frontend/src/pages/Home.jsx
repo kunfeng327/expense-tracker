@@ -6,6 +6,8 @@ import JapaneseCard from '../components/JapaneseCard.jsx'
 import NoteCard from '../components/NoteCard.jsx'
 import ListeningCard from '../components/ListeningCard.jsx'
 import ArtCard from '../components/ArtCard.jsx'
+import BibleCard from '../components/BibleCard.jsx'
+import TodoCard from '../components/TodoCard.jsx'
 
 // 账本首页:只放每日小卡片;记账入口、汇总、记录条目统一在统计页
 export default function Home() {
@@ -19,7 +21,9 @@ export default function Home() {
         <div className="col-12 col-sm-6 d-flex"><NoteCard /></div>
         <div className="col-12 col-sm-6 d-flex"><JapaneseCard /></div>
         <div className="col-12 col-sm-6 d-flex"><ListeningCard /></div>
+        <div className="col-12 col-sm-6 d-flex"><TodoCard /></div>
         <div className="col-12 d-flex"><ArtCard /></div>
+        <div className="col-12 d-flex"><BibleCard /></div>
       </div>
     </div>
   )

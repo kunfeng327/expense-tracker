@@ -346,6 +346,62 @@ body {
   overflow: hidden;
 }
 
+/* ---------- 今日任务卡片 ---------- */
+.todo-card { display: flex; flex-direction: column; }
+.todo-card .todo-list { flex: 1 1 auto; overflow-y: auto; max-height: 180px; }
+.todo-progress { background: rgba(148,163,184,.25); border-radius: 999px; }
+.todo-progress .progress-bar {
+  background: linear-gradient(120deg, var(--primary-deep), var(--violet));
+  transition: width .3s ease;
+}
+.todo-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 0; animation: poke-pop .25s ease-out;
+}
+.todo-check {
+  flex-shrink: 0; width: 20px; height: 20px; border-radius: 999px;
+  border: 1.5px solid rgba(148,163,184,.55); background: #fff;
+  font-size: 12px; line-height: 1; color: #fff; cursor: pointer;
+  transition: all .15s ease;
+}
+.todo-check.done {
+  border: none;
+  background: linear-gradient(120deg, var(--primary-deep), var(--violet));
+}
+.todo-text { font-size: .85rem; cursor: pointer; word-break: break-all; }
+.todo-text.done { text-decoration: line-through; color: var(--muted); opacity: .6; }
+.todo-del {
+  flex-shrink: 0; border: none; background: none; padding: 0 2px;
+  color: rgba(148,163,184,.7); font-size: .75rem; cursor: pointer;
+}
+.todo-del:hover { color: #ef4444; }
+.todo-input { border-radius: 999px; }
+
+/* ---------- 每日读圣经卡片 ---------- */
+.bible-card { cursor: pointer; transition: box-shadow .2s ease; }
+.bible-card:hover { box-shadow: 0 6px 18px -6px rgba(99,102,241,.35); }
+.bible-card .bible-hint { opacity: .75; }
+/* 收起态:只显示今日金句,高度固定不跳 */
+.bible-card:not(.expanded) .bible-today-verse {
+  min-height: 88px; margin: auto 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  animation: poke-pop .35s ease-out;
+}
+.bible-verse-text {
+  font-size: clamp(.9rem, 3.2vw, 1.05rem); line-height: 1.7;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3;
+  overflow: hidden;
+  background: linear-gradient(120deg, var(--primary-deep), var(--violet));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+/* 展开态:整章经文,限高可滚动 */
+.bible-card.expanded .bible-full {
+  max-height: 300px; font-size: .85rem; line-height: 1.9;
+}
+.bible-verse-no { color: var(--violet); font-size: .7em; margin-right: 2px; }
+.bible-card .bible-today { font-weight: 600; }
+
 /* ---------- 单词卡片 ---------- */
 .word-card { overflow: hidden; height: 215px; display: flex; flex-direction: column; }
 .word-card .word-body { margin: auto 0; animation: poke-pop .35s ease-out; }
