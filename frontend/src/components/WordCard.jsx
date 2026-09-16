@@ -1,17 +1,9 @@
 import React, { useState, useCallback } from 'react'
 import { KAOYAN_WORDS } from '../data/kaoyanWords.js'
+import { speak as ttsSpeak } from '../tts.js'
 
-// 用 Web Speech API 朗读单词(免费、离线可用),优先选英文发音人
-const speak = word => {
-  if (!('speechSynthesis' in window)) return
-  speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(word)
-  u.lang = 'en-US'
-  u.rate = 0.85
-  const voice = speechSynthesis.getVoices().find(v => v.lang?.startsWith('en') && /Google|Natural|Microsoft/i.test(v.name))
-  if (voice) u.voice = voice
-  speechSynthesis.speak(u)
-}
+// 用 Web Speech API 朗读单词,优先在线自然女声(见 tts.js)
+const speak = word => ttsSpeak(word, { rate: 0.85, gender: 'female' })
 
 // 考研英语单词卡:随机抽词,可朗读、可换词,释义先隐藏再揭晓
 export default function WordCard() {

@@ -6,11 +6,24 @@ import { getCache, setCache } from '../cache'
 const MOOD_EMOJIS = ['😊', '😔', '😠', '😭', '😱', '🥳', '😴', '🤔']
 const DECOR_EMOJIS = ['✨', '🌈', '🍀', '🌸', '☕', '🎵', '💪', '🔥', '⭐', '🌙', '❤️', '🎉']
 
+// 未保存的草稿暂存本地:关闭弹窗/误点历史记录都不会丢,下次打开继续写
+const DRAFT_KEY = 'note-draft'
+const loadDraft = () => {
+  try {
+    const d = JSON.parse(localStorage.getItem(DRAFT_KEY))
+    if (d && typeof d.text === 'string') return { mood: d.mood || '😊', text: d.text, decor: Array.isArray(d.decor) ? d.decor : [] }
+  } catch { /* 损坏则重置 */ }
+  return { mood: '😊', text: '', decor: [] }
+}
+const persistDraft = d => {
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)) } catch { /* 存不了就只在内存里 */ }
+}
+
 // 随想笔记本:随手记录心情,支持选心情/装饰 emoji,保存在服务端(按账号隔离)
 export default function NoteCard() {
   const [notes, setNotes] = useState([])
   const [showModal, setShowModal] = useState(false)
-  const [draft, setDraft] = useState({ mood: '😊', text: '', decor: [] })
+  const [draft, setDraft] = useState(loadDraft)
   const [viewId, setViewId] = useState(null)
   const [saving, setSaving] = useState(false)
 
@@ -38,7 +51,13 @@ export default function NoteCard() {
     migrate()
   }, [])
 
-  const openNew = () => { setDraft({ mood: '😊', text: '', decor: [] }); setShowModal(true) }
+  const updateDraft = patch => setDraft(d => {
+    const next = { ...d, ...patch }
+    persistDraft(next)
+    return next
+  })
+
+  const openNew = () => setShowModal(true) // 草稿保留在本地,接着上次继续写
 
   const save = async () => {
     const text = draft.text.trim()
@@ -47,6 +66,8 @@ export default function NoteCard() {
     setSaving(true)
     try {
       await api.addNote({ mood: draft.mood, text, decor: draft.decor })
+      localStorage.removeItem(DRAFT_KEY) // 保存成功才清草稿
+      setDraft({ mood: '😊', text: '', decor: [] })
       setShowModal(false)
       load()
     } catch (e) {
@@ -61,7 +82,7 @@ export default function NoteCard() {
   }
 
   const toggleDecor = e =>
-    setDraft(d => ({ ...d, decor: d.decor.includes(e) ? d.decor.filter(x => x !== e) : [...d.decor, e] }))
+    updateDraft({ decor: draft.decor.includes(e) ? draft.decor.filter(x => x !== e) : [...draft.decor, e] })
 
   const latest = notes[0]
   const timeLabel = iso => {
@@ -114,7 +135,7 @@ export default function NoteCard() {
                   {MOOD_EMOJIS.map(m => (
                     <button key={m} type="button"
                             className={`note-emoji-btn ${draft.mood === m ? 'active' : ''}`}
-                            onClick={() => setDraft(d => ({ ...d, mood: m }))}>{m}</button>
+                            onClick={() => updateDraft({ mood: m })}>{m}</button>
                   ))}
                 </div>
 
@@ -128,7 +149,7 @@ export default function NoteCard() {
                 </div>
 
                 <textarea className="form-control bg-light border-0 mb-2" rows="4" placeholder="这一刻在想什么…"
-                          value={draft.text} onChange={e => setDraft(d => ({ ...d, text: e.target.value }))} />
+                          value={draft.text} onChange={e => updateDraft({ text: e.target.value })} />
 
                 {notes.length > 0 && (
                   <>

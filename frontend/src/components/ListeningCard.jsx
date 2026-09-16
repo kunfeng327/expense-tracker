@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { LISTENING_SENTENCES } from '../data/listeningSentences.js'
+import { speak as ttsSpeak } from '../tts.js'
 
 const LAST_KEY = 'last-listening'
 
@@ -16,26 +17,8 @@ const pickIndex = exceptIdx => {
   return i
 }
 
-// 挑最自然的英文发音人:Edge 在线自然语音 > Google > Microsoft 本地
-const pickVoice = () => {
-  const voices = speechSynthesis.getVoices().filter(v => v.lang?.startsWith('en'))
-  return voices.find(v => /Natural|Neural/i.test(v.name))
-      || voices.find(v => /Google/i.test(v.name))
-      || voices.find(v => /Microsoft/i.test(v.name))
-      || voices.find(v => /en-US/i.test(v.lang))
-}
-
-const speak = sentence => {
-  if (!('speechSynthesis' in window)) return
-  speechSynthesis.cancel()
-  const u = new SpeechSynthesisUtterance(sentence)
-  u.lang = 'en-US'
-  u.rate = 0.9
-  u.pitch = 1
-  const voice = pickVoice()
-  if (voice) u.voice = voice
-  speechSynthesis.speak(u)
-}
+// 朗读走共享 tts.js:优先在线自然男声
+const speak = sentence => ttsSpeak(sentence, { rate: 0.9, gender: 'male' })
 
 // 每日英语听力句:长难句听写,先听音猜句,再揭晓英文和中文
 export default function ListeningCard() {
