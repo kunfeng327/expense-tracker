@@ -6,25 +6,23 @@ let voicesReady = null
 const waitForVoices = () => {
   if (!voicesReady) {
     voicesReady = new Promise(resolve => {
-      const list = speechSynthesis.getVoices()
-      if (list.length) return resolve(list)
+      const done = () => resolve(true)
+      if (speechSynthesis.getVoices().length) return done()
       // voices 多数浏览器在 voiceschanged 事件时才有;加 1s 兜底超时
-      const timer = setTimeout(() => resolve(speechSynthesis.getVoices()), 1000)
-      speechSynthesis.addEventListener('voiceschanged', () => {
-        clearTimeout(timer)
-        resolve(speechSynthesis.getVoices())
-      }, { once: true })
+      const timer = setTimeout(done, 1000)
+      speechSynthesis.addEventListener('voiceschanged', () => { clearTimeout(timer); done() }, { once: true })
     })
   }
-  return voicesReady
+  // 就绪只等一次,列表每次取最新的(Edge/Chrome 会后续刷新 voices)
+  return voicesReady.then(() => speechSynthesis.getVoices())
 }
 
 // 在线自然语音关键词,越靠前越优先
 const NATURAL = /Natural|Neural|Premium|Enhanced/i
-// 女声常见名字(Aria/Jenny/Michelle/Zira/Samantha/Serena...)
-const FEMALE = /Aria|Jenny|Michelle|Emma|Libby|Sonja|Zira|Samantha|Serena|Joanna|Salli|Kendra|Kimberly|Female|(?<!\w)F\b/i
+// 女声常见名字(Aria/Jenny/Michelle/Zira/Samantha/Serena...);加 \b 防止 Male 匹配到 Fe"male"
+const FEMALE = /\b(Aria|Jenny|Michelle|Emma|Libby|Sonja|Zira|Samantha|Serena|Joanna|Salli|Kendra|Kimberly|Female)\b/i
 // 男声常见名字(Guy/Daniel/Ryan/Eric/David/Mark/George...)
-const MALE = /Guy|Daniel|Ryan|Eric|Brian|Christopher|Roger|Steffan|David|Mark|George|Alex|Tom|Male|(?<!\w)M\b/i
+const MALE = /\b(Guy|Daniel|Ryan|Eric|Brian|Christopher|Roger|Steffan|David|Mark|George|Alex|Tom|Male)\b/i
 
 const pickVoice = (voices, gender) => {
   const en = voices.filter(v => v.lang?.toLowerCase().startsWith('en'))
