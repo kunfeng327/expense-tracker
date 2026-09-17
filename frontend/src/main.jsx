@@ -52,6 +52,16 @@ function App() {
     localStorage.getItem('token') ? (localStorage.getItem('username') || null) : null
   )
   const [profileAvatar, setProfileAvatar] = useState(localStorage.getItem('avatar') || null)
+  const [theme, setTheme] = useState(document.documentElement.dataset.theme || 'light')
+
+  // 切换深浅色:写 <html> 属性 + localStorage,Bootstrap 5.3 的 data-bs-theme 让弹窗/表单同步变深
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    setTheme(next)
+    localStorage.setItem('theme', next)
+    document.documentElement.dataset.theme = next
+    document.documentElement.dataset.bsTheme = next
+  }
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
@@ -77,6 +87,11 @@ function App() {
 
   return (
     <HashRouter>
+      {/* 深浅色切换:全局固定按钮,登录页/主界面都能切 */}
+      <button className="theme-toggle" title={theme === 'dark' ? '切换到浅色' : '切换到深色'}
+              onClick={toggleTheme}>
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </button>
       {user ? (
         <Layout user={user} onLogout={logout} profileAvatar={profileAvatar}>
           <Routes>

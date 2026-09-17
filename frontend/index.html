@@ -12,6 +12,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.3.0/chinese-simplified-500.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/noto-serif-sc@5.3.0/chinese-simplified-700.css">
 </head>
+  <script>
+    // 首屏前应用主题,避免闪白:优先用户选择,否则跟随系统
+    (function () {
+      var t = localStorage.getItem('theme')
+        || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      document.documentElement.dataset.theme = t
+      document.documentElement.dataset.bsTheme = t
+    })()
+  </script>
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>

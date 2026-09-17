@@ -13,6 +13,37 @@
   --shadow-lg: 0 12px 40px -8px rgba(79, 70, 229, .22);
 }
 
+/* ---------- 深色模式:覆盖变量 + 少量硬编码颜色 ---------- */
+[data-theme="dark"] {
+  --bg: #101422;
+  --card: #1a2030;
+  --text: #e2e8f0;
+  --muted: #8b93a8;
+  --shadow: 0 4px 24px -6px rgba(0, 0, 0, .45);
+  --shadow-lg: 0 12px 40px -8px rgba(0, 0, 0, .6);
+}
+[data-theme="dark"] body {
+  background:
+    radial-gradient(1000px 500px at 85% -10%, rgba(139, 92, 246, .10), transparent 60%),
+    radial-gradient(800px 400px at -10% 10%, rgba(99, 102, 241, .08), transparent 55%),
+    var(--bg);
+}
+/* 底部导航/月份切换/分类按钮等硬编码白底改半透明深色 */
+[data-theme="dark"] .bottom-nav { background: rgba(26, 32, 48, .86); border-color: rgba(139, 148, 168, .18); }
+[data-theme="dark"] .cat-chip,
+[data-theme="dark"] .month-nav,
+[data-theme="dark"] .todo-check,
+[data-theme="dark"] .note-emoji-btn { background: var(--card); color: var(--text); }
+/* 名画简介浮层:深色底 */
+[data-theme="dark"] .art-overlay { background: rgba(26, 32, 48, .97); }
+[data-theme="dark"] .art-overlay-text { color: #b6c0d4; }
+/* 日语卡绿色文字在深色下提亮 */
+[data-theme="dark"] .jp-word { color: #7ee87e; }
+[data-theme="dark"] .jp-roll { color: #7ee87e; border-color: rgba(126, 232, 126, .45); }
+[data-theme="dark"] .jp-card { border-top-color: #58cc02; }
+/* 滚动条 */
+[data-theme="dark"] .page-scroll::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, .35); }
+
 * { -webkit-tap-highlight-color: transparent; }
 html, body, #root { height: 100%; overflow: hidden; }
 
@@ -136,6 +167,19 @@ body {
   transition: transform .15s ease;
 }
 .fab:hover { transform: scale(1.07); }
+
+/* ---------- 深浅色切换:固定右上角,所有页面可见 ---------- */
+.theme-toggle {
+  position: fixed; top: 70px; right: 14px; z-index: 1060;
+  width: 38px; height: 38px; border-radius: 50%;
+  border: 1px solid rgba(148, 163, 184, .25);
+  background: var(--card); color: var(--text);
+  font-size: 18px; line-height: 1; cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform .15s ease;
+}
+.theme-toggle:hover { transform: scale(1.1) rotate(-8deg); }
+.theme-toggle:active { transform: scale(.9); }
 
 /* ---------- 底部导航 ---------- */
 .bottom-nav {
