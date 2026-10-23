@@ -17,14 +17,14 @@ const KINDS = [
 const INSTRUMENT_LABEL = { guitar: '🎸', piano: '🎹' }
 const KIND_LABEL = { spider: '爬格子', scale: '音阶', song: '曲目', technique: '技巧' }
 
-const whiteKeyboard = Array.from({ length: 52 }, (_, index) => ({ id: index, left: index * 24 }))
+const WHITE_KEY_COUNT = 21
+const whiteKeyboard = Array.from({ length: WHITE_KEY_COUNT }, (_, index) => ({ id: index, left: index * 26 }))
 const blackKeyboard = []
-for (let octave = 0; octave < 7; octave += 1) {
-  [0.7, 1.7, 3.7, 4.7, 5.7].forEach(offset => {
-    blackKeyboard.push({ id: `${octave}-${offset}`, left: (octave * 7 + offset) * 24 + 14 })
+for (let octave = 0; octave < 3; octave += 1) {
+  [0.8, 1.8, 3.8, 4.8, 5.8].forEach(offset => {
+    blackKeyboard.push({ id: `${octave}-${offset}`, left: (octave * 7 + offset) * 26 + 11 })
   })
 }
-blackKeyboard.push({ id: 'extra', left: 7 * 7 * 24 + 14 })
 
 // 吉他 / 钢琴练习记录:BPM、爬格子、音阶、曲目、技巧
 export default function Practice() {
@@ -42,7 +42,7 @@ export default function Practice() {
   }, [])
   useEffect(() => {
     const hit = getCache('practice')
-    if (hit) setLogs(hit) // 先秒显缓存,再后台刷新
+    if (hit) setLogs(hit)
     load()
   }, [load])
 
@@ -64,7 +64,6 @@ export default function Practice() {
 
   const latestInstrument = (logs && logs.length ? logs[0].instrument : 'piano')
 
-  // 本周小结:总时长、总次数、各类型分布
   const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - 6)
   const weekLogs = (logs || []).filter(l => new Date(l.date) >= weekStart)
   const weekMinutes = weekLogs.reduce((s, l) => s + l.minutes, 0)
@@ -77,7 +76,6 @@ export default function Practice() {
     return n
   })()
 
-  // 按日期分组
   const groups = {}
   ;(logs || []).forEach(l => { (groups[l.date.slice(0, 10)] ||= []).push(l) })
   const groupKeys = Object.keys(groups).sort().reverse()
@@ -96,7 +94,7 @@ export default function Practice() {
         <div className={`instrument-model ${latestInstrument === 'piano' ? 'piano' : 'guitar'}`} aria-label={latestInstrument === 'piano' ? '钢琴模型' : '吉他模型'}>
           {latestInstrument === 'piano' ? (
             <div className="piano-shell">
-              <div className="piano-keyboard" aria-label="88键钢琴">
+              <div className="piano-keyboard" aria-label="钢琴键盘布局">
                 {whiteKeyboard.map(key => (
                   <span key={`white-${key.id}`} className="white-key" style={{ left: `${key.left}px` }} />
                 ))}
@@ -124,7 +122,6 @@ export default function Practice() {
         </div>
       </div>
 
-      {/* 本周小结 */}
       <div className="row g-2 mb-3">
         <div className="col-4"><div className="stat-card stat-income text-center">
           <div className="label">本周练习</div><div className="value">{weekMinutes} 分钟</div></div></div>
@@ -147,7 +144,6 @@ export default function Practice() {
         </div>
       )}
 
-      {/* 记录列表 */}
       <div className="card" style={{ overflow: 'hidden' }}>
         {logs === null ? (
           <div className="text-center py-5 text-muted small">加载中…</div>
