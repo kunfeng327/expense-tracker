@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { api } from '../api.js'
 import { getCache, setCache } from '../cache.js'
+import PianoCard from '../components/PianoCard.jsx'
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -73,6 +74,9 @@ export default function Practice() {
 
   return (
     <div className="stagger d-flex flex-column">
+      {/* 三维钢琴:点击琴键发声 */}
+      <PianoCard />
+
       {/* 本周小结 */}
       <div className="row g-2 mb-3">
         <div className="col-4"><div className="stat-card stat-income text-center">

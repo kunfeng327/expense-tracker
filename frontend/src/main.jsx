@@ -7,6 +7,8 @@ import Stats from './pages/Stats.jsx'
 import Login from './pages/Login.jsx'
 import Profile from './pages/Profile.jsx'
 import Practice from './pages/Practice.jsx'
+import Game from './pages/Game.jsx'
+import Fps from './pages/Fps.jsx'
 import { clearCache } from './cache.js'
 import './style.css'
 
@@ -41,6 +43,12 @@ function Layout({ user, onLogout, profileAvatar, children }) {
         </NavLink>
         <NavLink to="/practice" className={({ isActive }) => isActive ? 'active' : ''}>
           <span className="nav-icon">🎸</span>练习
+        </NavLink>
+        <NavLink to="/game" className={({ isActive }) => isActive ? 'active' : ''}>
+          <span className="nav-icon">🎮</span>金币
+        </NavLink>
+        <NavLink to="/fps" className={({ isActive }) => isActive ? 'active' : ''}>
+          <span className="nav-icon">🔫</span>枪战
         </NavLink>
       </div>
     </div>
@@ -98,6 +106,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/practice" element={<Practice />} />
+            <Route path="/game" element={<Game />} />
+            <Route path="/fps" element={<Fps />} />
             <Route path="/profile" element={<Profile onSaved={() => {              import('./api.js').then(({ api }) =>
                 api.getProfile().then(p => {
                   localStorage.setItem('avatar', p.avatar || '')
