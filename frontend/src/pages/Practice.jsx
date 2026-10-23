@@ -5,8 +5,8 @@ import { getCache, setCache } from '../cache.js'
 const today = () => new Date().toISOString().slice(0, 10)
 
 const INSTRUMENTS = [
-  { value: 'guitar', label: '🎸 吉他' },
   { value: 'piano', label: '🎹 钢琴' },
+  { value: 'guitar', label: '🎸 吉他' },
 ]
 const KINDS = [
   { value: 'spider', label: '🕸️ 爬格子', hint: '半音阶 / 蜘蛛练习' },
@@ -22,7 +22,7 @@ export default function Practice() {
   const [logs, setLogs] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [form, setForm] = useState({
-    instrument: 'guitar', kind: 'spider', bpm: '', minutes: '', date: today(), note: '',
+    instrument: 'piano', kind: 'scale', bpm: '', minutes: '', date: today(), note: '',
   })
   const [saving, setSaving] = useState(false)
 
@@ -53,6 +53,8 @@ export default function Practice() {
     load()
   }
 
+  const latestInstrument = (logs && logs.length ? logs[0].instrument : 'piano')
+
   // 本周小结:总时长、总次数、各类型分布
   const weekStart = new Date(); weekStart.setDate(weekStart.getDate() - 6)
   const weekLogs = (logs || []).filter(l => new Date(l.date) >= weekStart)
@@ -73,6 +75,48 @@ export default function Practice() {
 
   return (
     <div className="stagger d-flex flex-column">
+      <div className="card practice-showcase">
+        <div className="practice-showcase-header">
+          <div>
+            <div className="small text-muted fw-semibold">当前器材</div>
+            <div className="fw-bold fs-5">{latestInstrument === 'piano' ? '🎹 钢琴' : '🎸 吉他'}</div>
+          </div>
+          <span className="practice-showcase-badge">{latestInstrument === 'piano' ? '练习中' : '准备中'}</span>
+        </div>
+
+        <div className={`instrument-model ${latestInstrument === 'piano' ? 'piano' : 'guitar'}`} aria-label={latestInstrument === 'piano' ? '钢琴模型' : '吉他模型'}>
+          {latestInstrument === 'piano' ? (
+            <>
+              <div className="model-shadow" />
+              <div className="piano-base" />
+              <div className="piano-body">
+                <div className="piano-lid" />
+                <div className="piano-keys">
+                  {Array.from({ length: 14 }).map((_, index) => (
+                    <span key={index} className={index % 7 === 0 || index % 7 === 3 || index % 7 === 6 ? 'key black' : 'key white'} />
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="model-shadow" />
+              <div className="guitar-body">
+                <div className="guitar-body-top" />
+                <div className="guitar-hole" />
+                <div className="guitar-strings">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <span key={index} style={{ '--i': index }} />
+                  ))}
+                </div>
+              </div>
+              <div className="guitar-neck" />
+              <div className="guitar-head" />
+            </>
+          )}
+        </div>
+      </div>
+
       {/* 本周小结 */}
       <div className="row g-2 mb-3">
         <div className="col-4"><div className="stat-card stat-income text-center">
@@ -129,14 +173,14 @@ export default function Practice() {
         )}
       </div>
 
-      <button className="fab" onClick={() => { setForm({ instrument: 'guitar', kind: 'spider', bpm: '', minutes: '', date: today(), note: '' }); setShowModal(true) }}>＋</button>
+      <button className="fab" onClick={() => { setForm({ instrument: 'piano', kind: 'scale', bpm: '', minutes: '', date: today(), note: '' }); setShowModal(true) }}>＋</button>
 
       {showModal && (
         <div className="modal d-block modal-shell" tabIndex="-1" onClick={() => setShowModal(false)}>
           <div className="modal-dialog modal-dialog-centered" onClick={e => e.stopPropagation()}>
             <div className="modal-content p-2">
               <div className="modal-header">
-                <h5 className="modal-title fw-bold">🎸 记一次练习</h5>
+                <h5 className="modal-title fw-bold">🎹 记一次练习</h5>
                 <button className="btn-close" onClick={() => setShowModal(false)} /></div>
               <div className="modal-body">
                 <div className="d-flex gap-2 mb-3">
