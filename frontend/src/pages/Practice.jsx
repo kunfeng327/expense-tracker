@@ -17,6 +17,15 @@ const KINDS = [
 const INSTRUMENT_LABEL = { guitar: '🎸', piano: '🎹' }
 const KIND_LABEL = { spider: '爬格子', scale: '音阶', song: '曲目', technique: '技巧' }
 
+const whiteKeyboard = Array.from({ length: 52 }, (_, index) => ({ id: index, left: index * 24 }))
+const blackKeyboard = []
+for (let octave = 0; octave < 7; octave += 1) {
+  [0.7, 1.7, 3.7, 4.7, 5.7].forEach(offset => {
+    blackKeyboard.push({ id: `${octave}-${offset}`, left: (octave * 7 + offset) * 24 + 14 })
+  })
+}
+blackKeyboard.push({ id: 'extra', left: 7 * 7 * 24 + 14 })
+
 // 吉他 / 钢琴练习记录:BPM、爬格子、音阶、曲目、技巧
 export default function Practice() {
   const [logs, setLogs] = useState(null)
@@ -86,18 +95,16 @@ export default function Practice() {
 
         <div className={`instrument-model ${latestInstrument === 'piano' ? 'piano' : 'guitar'}`} aria-label={latestInstrument === 'piano' ? '钢琴模型' : '吉他模型'}>
           {latestInstrument === 'piano' ? (
-            <>
-              <div className="model-shadow" />
-              <div className="piano-base" />
-              <div className="piano-body">
-                <div className="piano-lid" />
-                <div className="piano-keys">
-                  {Array.from({ length: 14 }).map((_, index) => (
-                    <span key={index} className={index % 7 === 0 || index % 7 === 3 || index % 7 === 6 ? 'key black' : 'key white'} />
-                  ))}
-                </div>
+            <div className="piano-shell">
+              <div className="piano-keyboard" aria-label="88键钢琴">
+                {whiteKeyboard.map(key => (
+                  <span key={`white-${key.id}`} className="white-key" style={{ left: `${key.left}px` }} />
+                ))}
+                {blackKeyboard.map(key => (
+                  <span key={`black-${key.id}`} className="black-key" style={{ left: `${key.left}px` }} />
+                ))}
               </div>
-            </>
+            </div>
           ) : (
             <>
               <div className="model-shadow" />
@@ -240,3 +247,4 @@ export default function Practice() {
     </div>
   )
 }
+
