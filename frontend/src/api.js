@@ -46,8 +46,6 @@ export const api = {
   listNotes: () => req('/api/notes'),
   addNote: body => req('/api/notes', { method: 'POST', body: JSON.stringify(body) }),
   deleteNote: id => req(`/api/notes/${id}`, { method: 'DELETE' }),
-  getBibleProgress: () => req('/api/bible/progress'),
-  bibleDone: () => req('/api/bible/done', { method: 'POST' }),
   listTodo: date => req(`/api/todo${date ? `?date=${date}` : ''}`),
   listTodoMonth: month => req(`/api/todo?month=${month}`),
   addTodo: body => req('/api/todo', { method: 'POST', body: JSON.stringify(body) }),

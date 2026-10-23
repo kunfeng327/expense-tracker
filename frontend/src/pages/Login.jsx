@@ -39,7 +39,7 @@ export default function Login({ onLogin }) {
         <div className="text-center mb-3">
           <div style={{
             width: 56, height: 56, margin: '0 auto 10px', borderRadius: 17, fontSize: 28,
-            background: 'linear-gradient(120deg, var(--primary-deep), var(--violet))',
+            background: 'var(--primary)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             boxShadow: 'var(--shadow-lg)',
           }}>💰</div>

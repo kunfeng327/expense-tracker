@@ -15,15 +15,15 @@ function Layout({ user, onLogout, profileAvatar, children }) {
     <div className="app-shell">
       <nav className="navbar topbar" style={{ flex: 'none' }}>
         <div className="container d-flex justify-content-between align-items-center">
-          <span className="brand text-white fw-bold">✦ 我的账本</span>
+          <span className="brand fw-bold">✦ 我的账本</span>
           {user && (
-            <span className="text-white d-flex align-items-center gap-2">
-              <NavLink to="/profile" className="text-white text-decoration-none d-flex align-items-center profile-avatar-btn"
+            <span className="topbar-right d-flex align-items-center gap-2">
+              <NavLink to="/profile" className="text-decoration-none d-flex align-items-center profile-avatar-btn"
                        title="账号资料">
                 <span className="avatar">{profileAvatar || '👤'}</span>
               </NavLink>
               <span className="small d-none d-sm-inline">{user}</span>
-              <a href="#" className="text-white-50 small text-decoration-none"
+              <a href="#" className="topbar-logout small text-decoration-none"
                  onClick={e => { e.preventDefault(); onLogout() }}>退出</a>
             </span>
           )}

@@ -3,7 +3,22 @@ import * as echarts from 'echarts'
 import { api, fmt, monthShift } from '../api.js'
 import { getCache, setCache } from '../cache.js'
 
-const PALETTE = ['#6366f1', '#8b5cf6', '#f43f5e', '#f97316', '#10b981', '#0ea5e9', '#eab308', '#ec4899']
+const PALETTE = ['#0090b3', '#5ac8de', '#0b5e75', '#ffc24b', '#ff8360', '#86b891', '#c0c0b6', '#7c7c84']
+// 图表配色跟随深浅主题
+const chartTheme = () => {
+  const dark = document.documentElement.dataset.theme === 'dark'
+  return {
+    label: dark ? '#c9c9cf' : '#5a5a60',
+    legend: dark ? '#9c9ca4' : '#76767c',
+    axis: dark ? '#2a2f38' : '#e7e7e2',
+    axisLabel: dark ? '#9c9ca4' : '#8a8a90',
+    splitLine: dark ? 'rgba(156,156,164,.18)' : 'rgba(118,118,124,.16)',
+    border: dark ? '#171a20' : '#fff',
+    accent: dark ? '#22c1de' : '#0090b3',
+    accentSoft: dark ? 'rgba(34,193,222,.22)' : 'rgba(0,144,179,.25)',
+    accentFade: dark ? 'rgba(34,193,222,0)' : 'rgba(0,144,179,0)',
+  }
+}
 
 const CAT_EMOJI = {
   '餐饮': '🍜', '交通': '🚗', '购物': '🛍️', '娱乐': '🎮', '居住': '🏠',
@@ -70,17 +85,18 @@ export default function Stats() {
   useEffect(() => {
     const { pie, line } = charts.current
     if (!pie) return
+    const t = chartTheme()
 
     pie.setOption({
       color: PALETTE,
       tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-      legend: { bottom: 6, itemWidth: 12, itemHeight: 12, itemGap: 14, textStyle: { fontSize: 13, color: '#64748b' } },
+      legend: { bottom: 6, itemWidth: 12, itemHeight: 12, itemGap: 14, textStyle: { fontSize: 13, color: t.legend } },
       series: [{
         type: 'pie', radius: ['42%', '68%'],
         center: ['50%', '44%'],
         data: stats.by_category,
-        label: { formatter: '{b}\n{d}%', fontSize: 13, color: '#475569', lineHeight: 18 },
-        itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+        label: { formatter: '{b}\n{d}%', fontSize: 13, color: t.label, lineHeight: 18 },
+        itemStyle: { borderRadius: 6, borderColor: t.border, borderWidth: 2 },
       }],
     })
 
@@ -89,24 +105,37 @@ export default function Stats() {
       grid: { left: 56, right: 24, bottom: 34, top: 26 },
       xAxis: {
         type: 'category', data: stats.by_day.map(d => d.date.slice(8)),
-        axisLine: { lineStyle: { color: '#cbd5e1' } }, axisLabel: { color: '#94a3b8', fontSize: 12 },
+        axisLine: { lineStyle: { color: t.axis } }, axisLabel: { color: t.axisLabel, fontSize: 12 },
       },
       yAxis: {
-        type: 'value', splitLine: { lineStyle: { color: 'rgba(148,163,184,.15)' } },
-        axisLabel: { color: '#94a3b8', fontSize: 12 },
+        type: 'value', splitLine: { lineStyle: { color: t.splitLine } },
+        axisLabel: { color: t.axisLabel, fontSize: 12 },
       },
       series: [{
         type: 'line', smooth: true, data: stats.by_day.map(d => d.value),
-        symbolSize: 7, lineStyle: { width: 3, color: '#6366f1' }, itemStyle: { color: '#6366f1' },
+        symbolSize: 7, lineStyle: { width: 3, color: t.accent }, itemStyle: { color: t.accent },
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: 'rgba(99,102,241,.28)' },
-            { offset: 1, color: 'rgba(99,102,241,0)' },
+            { offset: 0, color: t.accentSoft },
+            { offset: 1, color: t.accentFade },
           ]),
         },
       }],
     })
   }, [stats])
+
+  // 主题切换时重绘图表配色
+  useEffect(() => {
+    const ob = new MutationObserver(() => {
+      const { pie, line } = charts.current
+      if (!pie) return
+      const t = chartTheme()
+      pie.setOption({ legend: { textStyle: { color: t.legend } }, series: [{ label: { color: t.label }, itemStyle: { borderColor: t.border } }] })
+      line.setOption({ xAxis: { axisLine: { lineStyle: { color: t.axis } }, axisLabel: { color: t.axisLabel } }, yAxis: { axisLabel: { color: t.axisLabel }, splitLine: { lineStyle: { color: t.splitLine } } } })
+    })
+    ob.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+    return () => ob.disconnect()
+  }, [])
 
   const { expense, income } = stats.summary
   const expenseCategories = categories.filter(c => c.type === 'expense')

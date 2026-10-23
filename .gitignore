@@ -18,3 +18,7 @@ frontend/dist/
 *.png
 .playwright-mcp/
 flask.log
+
+# 本地工具与虚拟环境
+backend/.venv/
+.zcode/
